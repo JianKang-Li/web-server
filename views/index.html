@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../public/js/jquery-3.6.0.js"></script>
+  <script src="../public/js/bootstrap.js"></script>
+  <!-- <script src="../public/js/vue.global.js"></script> -->
+  <script src="../public/js/jquery.form.min.js"></script>
+  <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../public/css/bootstrap.css">
+  <title>浮生阁</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    form .btn {
+      width: fit-content;
+    }
+
+    .btn {
+      margin: 10px;
+
+    }
+
+    td {
+      vertical-align: middle
+    }
+
+    .mb-3 input {
+      display: inline;
+    }
+
+    #BUG {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Welcome to here</h2>
+  <button type="button" class="btn btn-light" id="BUG" data-bs-toggle="modal" data-bs-target="#bug">BUG</button>
+  <div>
+    <form method="post" id="file" action="/upload" onsubmit="return submitXML()" enctype="multipart/form-data">
+      <div class="mb-3">
+        <input class="form-control" type="file" id="reportXML" name="file">
+      </div>
+      <p>上传进度：<span id="status">0%</span></p>
+      <button type="submit" class="btn btn-primary">上传</button>
+    </form>
+
+  </div>
+  <table class="table" id="table1">
+    <tr>
+      <th>序号</th>
+      <th>文件</th>
+      <th>下载</th>
+      <th>删除</th>
+      <th>预览</th>
+    </tr>
+  </table>
+
+  <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">预览窗口</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="init()"></button>
+        </div>
+        <div class="modal-body">
+          <img src="" alt="无法以图片预览" id="showpic" style="height: 100%;width:100%;">
+          <audio src="" controls id="showMedia" style="width: 100%;"></audio>
+          <video controls width="100%" id="showVideo" src="">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="bug" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">BUG</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="init()"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>在chrome等浏览器下无法播放flv文件视频</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      getInfo()
+    }
+
+
+    var menu = undefined;
+    function submitXML() {
+      var fileInput = $('#reportXML').get(0).files[0];
+      // console.info(fileInput);
+      if (fileInput) {
+        $("#file").ajaxSubmit({
+          uploadProgress: (event, position, total, percentComplete) => {
+            $('#status').html(percentComplete + "%")
+          },
+          success: function (message) {
+            alert(message)
+            $('#status').html("0%")
+            getInfo()
+          }
+        });
+      } else {
+        alert("请选择上传文件！");
+      }
+      return false
+    }
+
+    function getInfo() {
+      var table = document.getElementById('table1')
+      table.innerHTML = `<table class="table" id="table1">
+        <tr>
+      <th>序号</th>
+      <th>文件</th>
+      <th>操作</th>
+      <th>删除</th>
+      <th>预览</th>
+      <tr>
+  </table>`;
+      $.get('/menu', res => {
+        var i = 1;
+        menu = res
+        menu.forEach(element => {
+          // console.log(typeof (element))
+          let tr =
+            `<tr>
+          <td> ${i}</td>
+          <td id='wjm${i}'>${element} </td>
+          <td><a href="../public/files/${element}" download="${element}">下载</a></td>
+          <td><button class="btn btn-primary" onclick="deletefile(${i})">删除文件</button></td>
+          <td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#preview" onclick="show(${i})">预览文件</button></td>
+          </tr>`
+          $(tr).appendTo("#table1")
+          i++
+        });
+      })
+    }
+
+
+    function deletefile(i) {
+      let result = confirm("确定删除" + menu[i - 1])
+      if (result === true) {
+        $.get('/delete?file=' + menu[i - 1], res => {
+          alert(res)
+          getInfo()
+        })
+      }
+    }
+
+    function show(i) {
+      let pics = ['jpg', 'png', 'webp', 'jpeg', 'bmp', 'gif']
+      let audios = ['mp3', 'ogg']
+      let videos = ['flv', 'swf', 'mp4', 'rmvb', '3gp', 'mpeg', 'wmv', 'avi', 'mov', 'mpv']
+      let name = menu[i - 1]
+      // console.log(name)
+      name = name.split('.')
+      // console.log(name[name.length - 1])
+      if (pics.includes(name[name.length - 1])) {
+        let path = "../public/files/" + menu[i - 1]
+        // console.log(path)
+        let audio = document.querySelector("#showMedia")
+        let video = document.querySelector('#showVideo')
+        let img = document.querySelector("#showpic")
+        audio.style.display = "none"
+        video.style.display = "none"
+        img.src = path
+      }
+      else if (audios.includes(name[name.length - 1])) {
+        let path = "../public/files/" + menu[i - 1]
+        // console.log(path)
+        let audio = document.querySelector("#showMedia")
+        let video = document.querySelector('#showVideo')
+        let img = document.querySelector("#showpic")
+        img.style.display = "none"
+        video.style.display = "none"
+        audio.src = path
+      }
+      else if (audios.includes(name[name.length - 1])) {
+        let path = "../public/files/" + menu[i - 1]
+        // console.log(path)
+        let audio = document.querySelector("#showMedia")
+        let video = document.querySelector('#showVideo')
+        let img = document.querySelector("#showpic")
+        img.style.display = "none"
+        video.style.display = "none"
+        audio.src = path
+      }
+      else if (videos.includes(name[name.length - 1])) {
+        let path = "../public/files/" + menu[i - 1]
+        console.log(path)
+        let audio = document.querySelector("#showMedia")
+        let video = document.querySelector('#showVideo')
+        let img = document.querySelector("#showpic")
+        img.style.display = "none"
+        audio.style.display = "none"
+        video.src = path
+      }
+    }
+    function init() {
+      let audio = document.querySelector("#showMedia")
+      let video = document.querySelector('#showVideo')
+      let img = document.querySelector("#showpic")
+      img.src = ''
+      video.src = ''
+      audio.src = ''
+      img.style.display = ""
+      video.style.display = ""
+      audio.style.display = ""
+    }
+  </script>
+</body>
+
+</html>
