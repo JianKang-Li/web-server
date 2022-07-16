@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <script src="../public/js/jquery-3.6.0.js"></script>
   <script src="../public/js/bootstrap.js"></script>
   <!-- <script src="../public/js/vue.global.js"></script> -->
@@ -191,45 +190,39 @@
       // console.log(name)
       name = name.split('.')
       // console.log(name[name.length - 1])
+      const audio = document.querySelector("#showMedia")
+      const video = document.querySelector('#showVideo')
+      const img = document.querySelector("#showpic")
+      const path = "../public/files/" + menu[i - 1]
       if (pics.includes(name[name.length - 1])) {
-        let path = "../public/files/" + menu[i - 1]
         // console.log(path)
-        let audio = document.querySelector("#showMedia")
-        let video = document.querySelector('#showVideo')
-        let img = document.querySelector("#showpic")
         audio.style.display = "none"
         video.style.display = "none"
         img.src = path
       }
       else if (audios.includes(name[name.length - 1])) {
-        let path = "../public/files/" + menu[i - 1]
         // console.log(path)
-        let audio = document.querySelector("#showMedia")
-        let video = document.querySelector('#showVideo')
-        let img = document.querySelector("#showpic")
         img.style.display = "none"
         video.style.display = "none"
         audio.src = path
       }
       else if (audios.includes(name[name.length - 1])) {
-        let path = "../public/files/" + menu[i - 1]
         // console.log(path)
-        let audio = document.querySelector("#showMedia")
-        let video = document.querySelector('#showVideo')
-        let img = document.querySelector("#showpic")
         img.style.display = "none"
         video.style.display = "none"
         audio.src = path
       }
       else if (videos.includes(name[name.length - 1])) {
-        let path = "../public/files/" + menu[i - 1]
-        console.log(path)
-        let audio = document.querySelector("#showMedia")
-        let video = document.querySelector('#showVideo')
-        let img = document.querySelector("#showpic")
+        // console.log(path)
         img.style.display = "none"
         audio.style.display = "none"
         video.src = path
+      }
+      else {
+        alert("浏览器不支持此类文件的预览!")
+        img.style.display = "none"
+        audio.style.display = "none"
+        video.style.display = "none"
       }
     }
     function init() {

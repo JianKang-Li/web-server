@@ -57,4 +57,10 @@ router.get("/delete", function (req, res) {
     res.send("删除失败");
   }
 });
+
+router.post("/write", function (req, res) {
+  context = req.body;
+  console.log(context)
+});
+
 module.exports = router;
