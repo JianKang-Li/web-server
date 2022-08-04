@@ -12,6 +12,11 @@ app.use("/file", express.static("./public/files/"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// 跨域
+const cors = require("cors");
+app.use(cors());
+
+
 var Router = require("./routers/router");
 app.use("/", Router);
 

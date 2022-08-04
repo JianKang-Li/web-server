@@ -18,6 +18,10 @@
       margin: 0;
     }
 
+    h2 {
+      margin: 1rem;
+    }
+
     body {
       display: flex;
       flex-direction: column;
@@ -37,11 +41,6 @@
 
     .btn {
       margin: 10px;
-
-    }
-
-    td {
-      vertical-align: middle
     }
 
     .mb-3 input {
@@ -50,8 +49,21 @@
 
     #BUG {
       position: fixed;
-      top: 1rem;
+      top: 0.5rem;
       right: 1rem;
+    }
+
+
+    table {
+      table-layout: fixed;
+    }
+
+    td {
+      width: 20%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -67,16 +79,8 @@
       <p>上传进度：<span id="status">0%</span></p>
       <button type="submit" class="btn btn-primary">上传</button>
     </form>
-
   </div>
   <table class="table" id="table1">
-    <tr>
-      <th>序号</th>
-      <th>文件</th>
-      <th>下载</th>
-      <th>删除</th>
-      <th>预览</th>
-    </tr>
   </table>
 
   <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -87,7 +91,8 @@
           <h5 class="modal-title" id="staticBackdropLabel">预览窗口</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="init()"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="showbody">
+          <p id="tip">不能预览此类文件</p>
           <img src="" alt="无法以图片预览" id="showpic" style="height: 100%;width:100%;">
           <audio src="" controls id="showMedia" style="width: 100%;"></audio>
           <video controls width="100%" id="showVideo" src="">
@@ -103,7 +108,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="staticBackdropLabel">BUG</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="init()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <ul>
@@ -146,36 +151,34 @@
       table.innerHTML = `<table class="table" id="table1">
         <tr>
       <th>序号</th>
-      <th>文件</th>
-      <th>操作</th>
+      <th>文件名</th>
+      <th>下载</th>
       <th>删除</th>
       <th>预览</th>
       <tr>
   </table>`;
       $.get('/menu', res => {
-        var i = 1;
         menu = res
         menu.forEach(element => {
           // console.log(typeof (element))
           let tr =
             `<tr>
-          <td> ${i}</td>
-          <td id='wjm${i}'>${element} </td>
-          <td><a href="../public/files/${element}" download="${element}">下载</a></td>
-          <td><button class="btn btn-primary" onclick="deletefile(${i})">删除文件</button></td>
-          <td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#preview" onclick="show(${i})">预览文件</button></td>
+          <td> ${element.index}</td>
+          <td class="wjm">${element.filename} </td>
+          <td><a href="../public/files/${element.filename}" download="${element.filename}">下载</a></td>
+          <td><button class="btn btn-primary" onclick="deletefile(${element.index})">删除</button></td>
+          <td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#preview" onclick="show(${element.index})">预览</button></td>
           </tr>`
           $(tr).appendTo("#table1")
-          i++
         });
       })
     }
 
 
     function deletefile(i) {
-      let result = confirm("确定删除" + menu[i - 1])
+      let result = confirm("确定删除" + menu[i - 1].filename)
       if (result === true) {
-        $.get('/delete?file=' + menu[i - 1], res => {
+        $.get('/delete?file=' + menu[i - 1].filename, res => {
           alert(res)
           getInfo()
         })
@@ -186,56 +189,58 @@
       let pics = ['jpg', 'png', 'webp', 'jpeg', 'bmp', 'gif']
       let audios = ['mp3', 'ogg']
       let videos = ['flv', 'swf', 'mp4', 'rmvb', '3gp', 'mpeg', 'wmv', 'avi', 'mov', 'mpv']
-      let name = menu[i - 1]
+      let name = menu[i - 1].filename
       // console.log(name)
       name = name.split('.')
       // console.log(name[name.length - 1])
       const audio = document.querySelector("#showMedia")
       const video = document.querySelector('#showVideo')
       const img = document.querySelector("#showpic")
-      const path = "../public/files/" + menu[i - 1]
+      const tip = document.querySelector("#tip")
+      const path = "../public/files/" + menu[i - 1].filename
+      // console.log(name)
       if (pics.includes(name[name.length - 1])) {
         // console.log(path)
         audio.style.display = "none"
         video.style.display = "none"
+        tip.style.display = "none"
+        img.style.display = "block"
         img.src = path
       }
       else if (audios.includes(name[name.length - 1])) {
         // console.log(path)
         img.style.display = "none"
         video.style.display = "none"
-        audio.src = path
-      }
-      else if (audios.includes(name[name.length - 1])) {
-        // console.log(path)
-        img.style.display = "none"
-        video.style.display = "none"
+        tip.style.display = "none"
+        audio.style.display = "block"
         audio.src = path
       }
       else if (videos.includes(name[name.length - 1])) {
         // console.log(path)
         img.style.display = "none"
         audio.style.display = "none"
+        tip.style.display = "none"
+        video.style.display = "block"
         video.src = path
       }
       else {
-        alert("浏览器不支持此类文件的预览!")
         img.style.display = "none"
         audio.style.display = "none"
         video.style.display = "none"
+        tip.style.display = "block"
       }
     }
+
     function init() {
-      let audio = document.querySelector("#showMedia")
-      let video = document.querySelector('#showVideo')
-      let img = document.querySelector("#showpic")
-      img.src = ''
-      video.src = ''
-      audio.src = ''
-      img.style.display = ""
-      video.style.display = ""
-      audio.style.display = ""
-    }
+      setTimeout(() => {
+        const body = document.querySelector("#showbody")
+        html = `<p id="tip">不能预览此类文件</p>
+          <img src="" alt="无法以图片预览" id="showpic" style="height: 100%;width:100%;">
+          <audio src="" controls id="showMedia" style="width: 100%;"></audio>
+          <video controls width="100%" id="showVideo" src="">`
+        body.innerHTML = html
+      }, 100)
+    }  
   </script>
 </body>
 

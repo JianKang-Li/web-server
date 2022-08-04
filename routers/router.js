@@ -12,9 +12,13 @@ router.get("/menu", function (req, res) {
   let menu = fs.readdirSync("./public/files/");
   // console.log(menu);
   let menu1 = [];
-  menu.forEach((item) => {
+  menu.forEach((item, idx) => {
     if (item != ".gitkeep") {
-      menu1.push(item);
+      let obj = {
+        filename: item,
+        index: idx
+      }
+      menu1.push(obj);
     }
   });
   res.send(menu1);
