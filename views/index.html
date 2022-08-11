@@ -163,6 +163,7 @@
   </table>`;
       $.get('/menu', res => {
         menu = res
+        // console.log(menu)
         menu.forEach(element => {
           // console.log(typeof (element))
           let tr =
@@ -180,6 +181,7 @@
 
 
     function deletefile(i) {
+      // console.log(menu[i - 1])
       let result = confirm("确定删除" + menu[i - 1].filename)
       if (result === true) {
         $.get('/delete?file=' + menu[i - 1].filename, res => {
@@ -244,7 +246,9 @@
           <video controls width="100%" id="showVideo" src="">`
         body.innerHTML = html
       }, 100)
-    }  
+    }
+
+    setInterval(getInfo, 1000 * 30)
   </script>
 </body>
 
