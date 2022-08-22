@@ -40,6 +40,13 @@ var getIPAddress = function () {
           ipv4 = details.address; //取addressIP地址
         }
       }
+      if (dev === "ens33") {
+        //判断需要获取IP的适配器
+        if (details.family == "IPv4") {
+          //判断是IPV4还是IPV6 还可以通过alias去判断
+          ipv4 = details.address; //取addressIP地址
+        }
+      }
       if (dev === "wlan0") {
         if (details.family == "IPv4") {
           ipv4 = details.address;
