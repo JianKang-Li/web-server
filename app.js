@@ -1,8 +1,6 @@
 var express = require("express");
-var fs = require("fs");
 var bodyParser = require("body-parser");
 var os = require("os");
-var networkInterfaces = os.networkInterfaces();
 
 var app = express();
 app.engine("html", require("express-art-template"));
