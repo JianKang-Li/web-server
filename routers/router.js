@@ -30,7 +30,7 @@ router.post("/upload", function (req, res) {
   form.uploadDir = "./files/";
   form.parse(req, function (err, fields, files) {
     if (err) {
-      console.log(err);
+      next(err)
     } else {
       // console.log(files.file);
       let name = files.file[0].originalFilename;
@@ -61,6 +61,7 @@ router.get("/delete", function (req, res) {
   } catch (e) {
     console.log(e);
     res.send("删除失败");
+    next(e)
   }
 });
 
