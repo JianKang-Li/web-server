@@ -23,7 +23,7 @@ router.get("/menu", function (req, res) {
   });
   res.send(menu1);
 });
-router.post("/upload", function (req, res) {
+router.post("/upload", function (req, res, next) {
   var form = new multiparty.Form();
   form.uploadDir = "./files/";
   form.parse(req, function (err, fields, files) {
@@ -53,7 +53,7 @@ router.post("/upload", function (req, res) {
   });
 });
 
-router.get("/delete", function (req, res) {
+router.get("/delete", function (req, res, next) {
   arr = decodeURI(req.url).split("?");
   filename = arr[1].split("=")[1];
   fs.access("./public/files/" + filename, (err) => {
