@@ -4,13 +4,11 @@ var multiparty = require("multiparty");
 var fs = require("fs");
 
 router.get("/", function (req, res) {
-  res.render("index.html");
+  res.render("../views/index.html");
 });
 
 router.get("/menu", function (req, res) {
-  res.set("Access-Control-Allow-Origin", "*");
   let menu = fs.readdirSync("./public/files/");
-  // console.log(menu);
   let menu1 = [];
   let idx = 1
   menu.forEach((item) => {
@@ -32,17 +30,23 @@ router.post("/upload", function (req, res) {
     if (err) {
       next(err)
     } else {
-      // console.log(files.file);
-      let name = files.file[0].originalFilename;
-      fs.rename(files.file[0].path, "./public/files/" + name, (err) => {
+      // console.log(files.filename);
+      let name = files.filename[0].originalFilename;
+      fs.rename(files.filename[0].path, "./public/files/" + name, (err) => {
         if (err) {
           // console.log("重命名失败");
           res.setHeader("Content-Type", "application/text");
-          res.send("上传失败");
+          res.status(500).send({
+            status: 500,
+            message: "Error"
+          });
+          next(err)
         } else {
           // console.log("命名成功");
-          res.setHeader("Content-Type", "application/text");
-          res.send("上传成功");
+          res.status(200).send({
+            status: 200,
+            message: "Success"
+          });
         }
       });
     }

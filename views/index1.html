@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="../public/js/jquery-3.6.0.js"></script>
+  <script src="../public/js/bootstrap.js"></script>
+  <!-- <script src="../public/js/vue.global.js"></script> -->
+  <script src="../public/js/jquery.form.min.js"></script>
+  <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../public/css/bootstrap.css">
+  <title>浮生阁</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    h2 {
+      margin: 1rem;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    form .btn {
+      width: fit-content;
+    }
+
+    .btn {
+      margin: 10px;
+    }
+
+    .mb-3 input {
+      display: inline;
+    }
+
+    #BUG {
+      position: fixed;
+      top: 0.5rem;
+      right: 1rem;
+    }
+
+
+    table {
+      table-layout: fixed;
+    }
+
+    td {
+      width: 20%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>AirDrop</h2>
+  <button type="button" class="btn btn-light" id="BUG" data-bs-toggle="modal" data-bs-target="#bug">BUG</button>
+  <div>
+    <form method="post" id="file" action="/upload" onsubmit="return submitXML()" enctype="multipart/form-data">
+      <div class="mb-3">
+        <input class="form-control" type="file" id="reportXML" name="file">
+      </div>
+      <p>上传进度：<span id="status">0%</span></p>
+      <button type="submit" class="btn btn-primary">上传</button>
+    </form>
+  </div>
+  <table class="table" id="table1">
+  </table>
+
+  <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">预览窗口</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="init()"></button>
+        </div>
+        <div class="modal-body" id="showbody">
+          <p id="tip">不能预览此类文件</p>
+          <img src="" alt="无法以图片预览" id="showpic" style="height: 100%;width:100%;">
+          <audio src="" controls id="showMedia" style="width: 100%;"></audio>
+          <video controls width="100%" id="showVideo" src="">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="bug" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">BUG</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>在chrome等浏览器下无法播放flv文件视频</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      getInfo()
+    }
+
+
+    var menu = undefined;
+    function submitXML() {
+      var fileInput = $('#reportXML').get(0).files[0];
+      // console.info(fileInput);
+      if (fileInput) {
+        $("#file").ajaxSubmit({
+          uploadProgress: (event, position, total, percentComplete) => {
+            $('#status').html(percentComplete + "%")
+          },
+          success: function (message) {
+            alert(message)
+            $('#status').html("0%")
+            getInfo()
+          }
+        });
+      } else {
+        alert("请选择上传文件！");
+      }
+      return false
+    }
+
+    function getInfo() {
+      var table = document.getElementById('table1')
+      table.innerHTML = `<table class="table" id="table1">
+        <tr>
+      <th>序号</th>
+      <th>文件名</th>
+      <th>下载</th>
+      <th>删除</th>
+      <th>预览</th>
+      <tr>
+  </table>`;
+      $.get('/menu', res => {
+        menu = res
+        // console.log(menu)
+        menu.forEach(element => {
+          // console.log(typeof (element))
+          let tr =
+            `<tr>
+          <td> ${element.index}</td>
+          <td class="wjm">${element.filename} </td>
+          <td><a href="../public/files/${element.filename}" download="${element.filename}">下载</a></td>
+          <td><button class="btn btn-primary" onclick="deletefile(${element.index})">删除</button></td>
+          <td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#preview" onclick="show(${element.index})">预览</button></td>
+          </tr>`
+          $(tr).appendTo("#table1")
+        });
+      })
+    }
+
+
+    function deletefile(i) {
+      // console.log(menu[i - 1])
+      let result = confirm("确定删除" + menu[i - 1].filename)
+      if (result === true) {
+        $.get('/delete?file=' + menu[i - 1].filename, res => {
+          alert(res)
+          getInfo()
+        })
+      }
+    }
+
+    function show(i) {
+      let pics = ['jpg', 'png', 'webp', 'jpeg', 'bmp', 'gif']
+      let audios = ['mp3', 'ogg']
+      let videos = ['flv', 'swf', 'mp4', 'rmvb', '3gp', 'mpeg', 'wmv', 'avi', 'mov', 'mpv']
+      let name = menu[i - 1].filename
+      // console.log(name)
+      name = name.split('.')
+      // console.log(name[name.length - 1])
+      const audio = document.querySelector("#showMedia")
+      const video = document.querySelector('#showVideo')
+      const img = document.querySelector("#showpic")
+      const tip = document.querySelector("#tip")
+      const path = "../public/files/" + menu[i - 1].filename
+      // console.log(name)
+      if (pics.includes(name[name.length - 1])) {
+        // console.log(path)
+        audio.style.display = "none"
+        video.style.display = "none"
+        tip.style.display = "none"
+        img.style.display = "block"
+        img.src = path
+      }
+      else if (audios.includes(name[name.length - 1])) {
+        // console.log(path)
+        img.style.display = "none"
+        video.style.display = "none"
+        tip.style.display = "none"
+        audio.style.display = "block"
+        audio.src = path
+      }
+      else if (videos.includes(name[name.length - 1])) {
+        // console.log(path)
+        img.style.display = "none"
+        audio.style.display = "none"
+        tip.style.display = "none"
+        video.style.display = "block"
+        video.src = path
+      }
+      else {
+        img.style.display = "none"
+        audio.style.display = "none"
+        video.style.display = "none"
+        tip.style.display = "block"
+      }
+    }
+
+    function init() {
+      setTimeout(() => {
+        const body = document.querySelector("#showbody")
+        html = `<p id="tip">不能预览此类文件</p>
+          <img src="" alt="无法以图片预览" id="showpic" style="height: 100%;width:100%;">
+          <audio src="" controls id="showMedia" style="width: 100%;"></audio>
+          <video controls width="100%" id="showVideo" src="">`
+        body.innerHTML = html
+      }, 100)
+    }
+
+    setInterval(getInfo, 1000 * 10)
+  </script>
+</body>
+
+</html>

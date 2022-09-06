@@ -4,8 +4,9 @@ var os = require("os");
 
 var app = express();
 app.engine("html", require("express-art-template"));
-app.use("/public", express.static("public"));
+app.use("/public", express.static("./public"));
 app.use("/file", express.static("./public/files/"));
+app.use(express.static(__dirname + '/views'));
 // app.use("/node_modules", express.static("node_modules"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
