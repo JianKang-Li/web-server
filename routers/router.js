@@ -7,22 +7,27 @@ router.get("/", function (req, res) {
   res.render("../views/index.html");
 });
 
-router.get("/menu", function (req, res) {
-  let menu = fs.readdirSync("./public/files/");
-  let menu1 = [];
-  let idx = 1
-  menu.forEach((item) => {
-    if (item != ".gitkeep") {
-      let obj = {
-        filename: item,
-        index: idx
+router.get("/menu", function (req, res, next) {
+  try {
+    let menu = fs.readdirSync("./public/files/");
+    let menu1 = [];
+    let idx = 1
+    menu.forEach((item) => {
+      if (item != ".gitkeep") {
+        let obj = {
+          filename: item,
+          index: idx
+        }
+        menu1.push(obj);
+        idx++
       }
-      menu1.push(obj);
-      idx++
-    }
-  });
-  res.send(menu1);
+    });
+    res.send(menu1);
+  } catch (e) {
+    next(e)
+  }
 });
+
 router.post("/upload", function (req, res, next) {
   var form = new multiparty.Form();
   form.uploadDir = "./files/";
@@ -56,14 +61,14 @@ router.post("/upload", function (req, res, next) {
 router.get("/delete", function (req, res, next) {
   arr = decodeURI(req.url).split("?");
   filename = arr[1].split("=")[1];
-  fs.access("./public/files/" + filename, (err) => {
-    console.log(`${filename} ${err ? "does not exist" : "exists"}`);
-  });
   try {
+    fs.access("./public/files/" + filename, (err) => {
+      console.log(`${filename} ${err ? "does not exist" : "exists"}`);
+    });
     fs.unlinkSync("./public/files/" + filename);
     res.send("文件已删除");
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     res.send("删除失败");
     next(e)
   }
