@@ -6,7 +6,7 @@ let ChildProcess = process.fork('./app.js');
 
 ChildProcess.on('exit', function (code) {
   console.log('process exits + ' + code);
-  fs.appendFileSync('./log.txt', code);
+  fs.appendFileSync('./log.txt', code + "\n");
   if (code !== 0) {
     process.fork('./auto.js');
   }

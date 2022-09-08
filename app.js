@@ -23,7 +23,7 @@ app.use("/", Router);
 app.use((err, req, res, next) => {
   if (err) {
     console.log(err)
-    fs.appendFileSync('./log.txt', err);
+    fs.appendFileSync('./log.txt', err + "\n");
   }
   res.send("服务器出错了！");
   next();
