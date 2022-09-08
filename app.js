@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var os = require("os");
+const fs = require("fs")
 
 var app = express();
 app.engine("html", require("express-art-template"));
@@ -20,7 +21,10 @@ var Router = require("./routers/router");
 app.use("/", Router);
 
 app.use((err, req, res, next) => {
-  if (err) console.log(err);
+  if (err) {
+    console.log(err)
+    fs.appendFileSync('./log.txt', err);
+  }
   res.send("服务器出错了！");
   next();
 });
