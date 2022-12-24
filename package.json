@@ -2,10 +2,25 @@
   "name": "web-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "node auto.js"
+    "dev": "node auto.js",
+    "pkg": "pkg -t node18-win-x64 package.json"
+  },
+  "bin": "./app.js",
+  "pkg": {
+    "bin": "./app.js",
+    "assets": [
+      "public/**/*",
+      "routers/*",
+      "files/*",
+      "views/**/*",
+      "./node_modules/**/*"
+    ],
+    "target": [
+      "node18-win-x64"
+    ]
   },
   "keywords": [],
   "author": "",
