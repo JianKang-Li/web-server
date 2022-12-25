@@ -82,7 +82,6 @@
             class="perv"
             ref="video"
           ></video>
-          <object ref="pdf" v-else-if="this.texts.includes(this.type)"></object>
           <span v-else class="perv">浏览器不支持此类型文件!</span>
         </div>
       </el-dialog>
@@ -164,8 +163,8 @@ export default {
   },
   mounted() {
     this.getMenu();
-    this.ws.onmessage=(data)=>{
-      console.log(data.data);
+    this.ws.onmessage=()=>{
+      // console.log(data.data);
       this.getMenu()
     }
     if (this.ws.readyState === 3) {
