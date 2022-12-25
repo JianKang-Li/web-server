@@ -18,16 +18,6 @@ app.use(cors());
 
 
 var Router = require("./routers/router");
-app.use("/", Router);
-
-app.use((err, req, res, next) => {
-  if (err) {
-    console.log(err)
-    fs.appendFileSync('./log.txt', err + "\n");
-  }
-  res.send("服务器出错了！");
-  next();
-});
 
 // console.info(networkInterfaces);
 var getIPAddress = function () {
@@ -61,8 +51,24 @@ var getIPAddress = function () {
   return ipv4 || "127.0.0.1";
 };
 var ip = getIPAddress();
+
+app.use('/ip', function (req, res, next) {
+  res.send(ip)
+})
+app.use("/", Router);
+
+app.use((err, req, res, next) => {
+  if (err) {
+    console.log(err)
+    fs.appendFileSync('./log.txt', err + "\n");
+  }
+  res.send("服务器出错了！");
+  next();
+});
+
 app.listen(8888, function () {
   console.log(`启动成功!
 - http://127.0.0.1:8888
 - http://${ip}:8888`);
 });
+

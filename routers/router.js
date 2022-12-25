@@ -3,6 +3,18 @@ var router = express.Router();
 var multiparty = require("multiparty");
 var fs = require("fs");
 
+/* 创建webSocket实例 */
+const WebSocket = require('ws')
+
+const wss = new WebSocket.Server({ port: 8089 });
+wss.on('connection', function (ws) {
+  console.log('client connected');
+  ws.on('message', function (data, isBinary) {
+    const text = isBinary ? data : data.toString()
+    console.log(text);
+  });
+});
+
 router.get("/", function (req, res) {
   res.render("../views/index.html");
 });
@@ -52,6 +64,9 @@ router.post("/upload", function (req, res, next) {
             status: 200,
             message: "Success"
           });
+          wss.clients.forEach(cl => {
+            cl.send('update')
+          })
         }
       });
     }
@@ -67,6 +82,9 @@ router.get("/delete", function (req, res, next) {
     });
     fs.unlinkSync("./public/files/" + filename);
     res.send("文件已删除");
+    wss.clients.forEach(cl => {
+      cl.send('update')
+    })
   } catch (e) {
     // console.log(e);
     res.send("删除失败");
@@ -74,9 +92,12 @@ router.get("/delete", function (req, res, next) {
   }
 });
 
-router.post("/write", function (req, res) {
-  context = req.body;
-  console.log(context)
-});
+router.get('/ip', function (req, res, next) {
+  res.send()
+})
+
+
+console.log('ws run at ws://127.0.0.1:8089');
+
 
 module.exports = router;
