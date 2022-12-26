@@ -46,9 +46,9 @@ export default {
     },
 
     proUpdata(event) {
-      console.log(event);
+      // console.log(event);
       this.percentage = parseInt(event.percent); // 动态获取文件上传进度
-      console.log(this.percentage);
+      // console.log(this.percentage);
       if (this.percentage >= 100) {
         this.percentage = 100;
         setTimeout(() => {
@@ -74,7 +74,7 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.status === 200) {
+          if (res.status === 200) {
             this.$notify({
               title: "成功",
               message: "文件上传成功",
@@ -85,12 +85,12 @@ export default {
             }, 1000);
             this.ws.send("update");
             getInfo().then((res) => {
-              this.$store.dispatch("updata", res.data);
+              this.$store.dispatch("updata", res);
             });
           } else {
             this.$notify.error({
               title: "错误",
-              message: res.data.message,
+              message: res.message,
             });
           }
           this.$refs.upload.clearFiles();
@@ -105,14 +105,6 @@ export default {
       return this.percentage === 100 ? "success" : "";
     },
   },
-
-  mounted() {
-    if (this.ws.readyState === 3) {
-      window.setInterval(function () {
-        getInfo();
-      });
-    }
-  },
 };
 </script>
 
@@ -122,6 +114,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-top: 0.3rem;
 }
 
 .upload-demo {
@@ -132,7 +125,8 @@ export default {
 }
 
 #progress {
-  width: 70vw;
+  max-width: 40rem;
+  width: 70%;
   position: static;
 }
 

@@ -11,9 +11,20 @@ wss.on('connection', function (ws) {
   console.log('client connected');
   ws.on('message', function (data, isBinary) {
     const text = isBinary ? data : data.toString()
-    console.log(text);
+    // console.log(text);
+    
   });
 });
+
+function wsSend(text) {
+  wss.clients.forEach(cl => {
+    cl.send(text)
+  })
+}
+
+router.get('/ip', function (req, res, next) {
+  res.send()
+})
 
 router.get("/", function (req, res) {
   res.render("../views/index.html");
@@ -64,9 +75,7 @@ router.post("/upload", function (req, res, next) {
             status: 200,
             message: "Success"
           });
-          wss.clients.forEach(cl => {
-            cl.send('update')
-          })
+          wsSend('upload')
         }
       });
     }
@@ -82,9 +91,7 @@ router.get("/delete", function (req, res, next) {
     });
     fs.unlinkSync("./public/files/" + filename);
     res.send("文件已删除");
-    wss.clients.forEach(cl => {
-      cl.send('update')
-    })
+    wsSend('delete')
   } catch (e) {
     // console.log(e);
     res.send("删除失败");
@@ -92,8 +99,25 @@ router.get("/delete", function (req, res, next) {
   }
 });
 
-router.get('/ip', function (req, res, next) {
-  res.send()
+router.post('/write', function (req, res, next) {
+  let text = req.body.text.trim()
+  if (text) {
+    console.log(text);
+    const msg = {
+      status: 'write',
+      content: text
+    }
+    const data = JSON.stringify(msg)
+    wsSend(data)
+    res.send({
+      status: 200,
+      message: "writed"
+    })
+  }
+})
+
+router.post('/clear', function (req, res, next) {
+  wsSend('clear')
 })
 
 

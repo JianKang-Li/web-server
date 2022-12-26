@@ -3,8 +3,7 @@
     <el-container>
       <el-header><Ahead /></el-header>
       <el-main>
-        <UpLoad />
-        <FileList />
+        <router-view> </router-view>
       </el-main>
       <el-footer>
         <div class="footer">
@@ -24,12 +23,11 @@
 </template>
 
 <script lang="js">
-import UpLoad from "@/components/UpLoad.vue";
-import FileList from "./components/FileList.vue";
+
 import Ahead from "./components/Ahead.vue"
 export default {
   name: "App",
-  components: { UpLoad, FileList,Ahead }
+  components:{Ahead}
 }
 </script>
 

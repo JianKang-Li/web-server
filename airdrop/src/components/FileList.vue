@@ -110,7 +110,8 @@ export default {
   methods: {
     getMenu() {
       getInfo().then((res)=>{
-        this.$store.dispatch("updata",res.data)
+        // console.log('getInfo',res);
+        this.$store.dispatch("updata",res)
       })
     },
 
@@ -142,7 +143,7 @@ export default {
         (res) => {
           this.$message({
             type: "success",
-            message: `${res.data}`,
+            message: `${res}`,
           });
           this.ws.send('delete')
         })
@@ -163,14 +164,19 @@ export default {
   },
   mounted() {
     this.getMenu();
-    this.ws.onmessage=()=>{
+    if(this.ws){
+      this.ws.onmessage=(data)=>{
       // console.log(data.data);
-      this.getMenu()
+      const msg=data.data
+      if(msg==='upload'||msg==='delete'){
+        this.getMenu()
+        }
+      }
     }
-    if (this.ws.readyState === 3) {
+   else {
       window.timer = setInterval(() => {
        this.getMenu()
-    }, 3000)
+      }, 3000)
     }
   },
 

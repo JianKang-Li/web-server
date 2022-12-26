@@ -9,6 +9,7 @@ const store = new Vuex.Store({
   },
   actions: {
     updata(context, value) {
+      // console.log(value);
       context.commit('flash', value)
     }
   },

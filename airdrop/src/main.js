@@ -11,9 +11,10 @@ Vue.prototype.Dev = false;
 Vue.use(ElementUI)
 
 import { getIP } from "@/apis/index"
+import router from './router'
 
 getIP().then(res => {
-  let ip = res.data
+  let ip = res
   let ws = new WebSocket(`ws://${ip}:8089`)
   ws.onopen = () => {
     console.log('ws open');
@@ -27,6 +28,7 @@ getIP().then(res => {
 setTimeout(() => {
   new Vue({
     render: h => h(App),
-    store
+    store,
+    router
   }).$mount('#app')
 }, 100)
