@@ -17,3 +17,8 @@ export const getIP = () => {
 export const postT = (data) => {
   return request._axios.post('/write', data)
 }
+
+// 清除文本
+export const cleanT = () => {
+  return request._axios.get('/clear')
+}

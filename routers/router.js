@@ -12,7 +12,7 @@ wss.on('connection', function (ws) {
   ws.on('message', function (data, isBinary) {
     const text = isBinary ? data : data.toString()
     // console.log(text);
-    
+
   });
 });
 
@@ -116,8 +116,16 @@ router.post('/write', function (req, res, next) {
   }
 })
 
-router.post('/clear', function (req, res, next) {
-  wsSend('clear')
+router.get('/clear', function (req, res, next) {
+  const msg = {
+    status: 'clear'
+  }
+  const data = JSON.stringify(msg)
+  wsSend(data)
+  res.send({
+    status: 200,
+    message: "cleaned"
+  })
 })
 
 
