@@ -61,29 +61,27 @@
         center
         @close="Pclose"
       >
-        <div>
-          <img
-            :src="url"
-            alt=""
-            v-if="this.pics.includes(this.type)"
-            class="perv"
-          />
-          <audio
-            :src="url"
-            v-else-if="this.audios.includes(this.type)"
-            controls
-            class="perv"
-            ref="audio"
-          ></audio>
-          <video
-            :src="url"
-            v-else-if="this.videos.includes(this.type)"
-            controls
-            class="perv"
-            ref="video"
-          ></video>
-          <span v-else class="perv">浏览器不支持此类型文件!</span>
-        </div>
+        <img
+          :src="url"
+          alt=""
+          v-if="this.pics.includes(this.type)"
+          class="perv"
+        />
+        <audio
+          :src="url"
+          v-else-if="this.audios.includes(this.type)"
+          controls
+          class="perv"
+          ref="audio"
+        ></audio>
+        <video
+          :src="url"
+          v-else-if="this.videos.includes(this.type)"
+          controls
+          class="perv"
+          ref="video"
+        ></video>
+        <span v-else class="perv">浏览器不支持此类型文件!</span>
       </el-dialog>
     </div>
   </div>
@@ -193,6 +191,8 @@ a {
 }
 
 .perv {
-  max-width: 100%;
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
 }
 </style>
