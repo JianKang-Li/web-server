@@ -29,6 +29,7 @@
 <script>
 import request from "@/apis/request";
 import { getInfo } from "@/apis";
+import {remove} from "@/utils"
 export default {
   data() {
     return {
@@ -57,10 +58,9 @@ export default {
       }
     },
 
-    httpRequest(params) {
-      // console.log(params.file); //拿到上传的文件
-      var formdata = new FormData();
-      formdata.append("filename", params.file);
+    postFile(file){
+      var formdata=new FormData()
+      formdata.append("filename", file);
       request
         ._axios({
           method: "post",
@@ -82,7 +82,7 @@ export default {
             });
             setTimeout(() => {
               this.percentage = 0;
-            }, 1000);
+            }, 500);
             this.ws.send("update");
             getInfo().then((res) => {
               this.$store.dispatch("updata", res);
@@ -93,11 +93,35 @@ export default {
               message: res.message,
             });
           }
-          this.$refs.upload.clearFiles();
+          if(!this.fileList.length){
+            this.$refs.upload.clearFiles();
+          }
         })
         .catch((e) => {
           console.log(e);
         });
+    },
+
+    postFiles(){
+      for(let file of this.fileList){
+        if(!file.finished){
+          this.postFile(file)
+        }
+      }
+      for(let file of this.fileList){
+        if(file.finished){
+          remove(this.fileList,file)
+          console.log(this.fileList);
+        }
+      }
+    },
+
+    httpRequest(params) {
+      if(!this.fileList.includes(params)){
+        params.finished=false
+        this.fileList.push(params)
+        this.postFiles()
+      }
     },
   },
   watch: {
