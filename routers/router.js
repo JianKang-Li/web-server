@@ -58,26 +58,27 @@ router.post("/upload", function (req, res, next) {
     if (err) {
       next(err)
     } else {
-      // console.log(files.filename);
-      let name = files.filename[0].originalFilename;
-      fs.rename(files.filename[0].path, "./public/files/" + name, (err) => {
-        if (err) {
-          // console.log("重命名失败");
-          res.setHeader("Content-Type", "application/text");
-          res.status(500).send({
-            status: 500,
-            message: "Error"
-          });
-          next(err)
-        } else {
-          // console.log("命名成功");
-          res.status(200).send({
-            status: 200,
-            message: "Success"
-          });
-          wsSend('upload')
-        }
+      for (let i = 0; i < files.file.length; i++) {
+        let file = files.file[i]
+        let name = file.originalFilename;
+        fs.rename(file.path, "./public/files/" + name, (err) => {
+          if (err) {
+            // console.log("重命名失败");
+            res.setHeader("Content-Type", "application/text");
+            res.status(500).send({
+              status: 500,
+              message: "Error"
+            });
+            next(err)
+          }
+        });
+      }
+      // console.log("命名成功");
+      res.status(200).send({
+        status: 200,
+        message: "Success"
       });
+      wsSend('upload')
     }
   });
 });

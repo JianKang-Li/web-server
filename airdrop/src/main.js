@@ -6,7 +6,6 @@ import store from "./store"
 
 
 Vue.config.productionTip = false
-Vue.prototype.globalUrl = "http://127.0.0.1:8888";
 Vue.prototype.Dev = false;
 Vue.use(ElementUI)
 
@@ -25,7 +24,7 @@ new Vue({
         console.log('ws open');
       }
       ws.onclose = () => {
-        alert('ws close')
+        this.$message.error('WebSocket已断开')
       }
       Vue.prototype.ws = ws
     })

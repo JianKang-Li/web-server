@@ -6,6 +6,7 @@ class Request {
       // baseURL: "http://httpbin.org/",
       // baseURL: "http://192.168.1.4:8888",
       // baseURL: "http://192.168.0.101:8888"
+      // baseURL: "http://172.30.32.17:8888"
     });
     this._axios.interceptors.response.use(function (res) {
       return res.data
