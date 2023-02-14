@@ -44,6 +44,10 @@ var getIPAddress = function () {
         if (details.family == "IPv4") {
           ipv4 = details.address;
         }
+      }else if(dev==='enp4s0'){
+        if (details.family == "IPv4") {
+          ipv4 = details.address;
+        }
       }
     });
   }
