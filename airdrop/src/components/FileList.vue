@@ -2,51 +2,28 @@
   <div class="table">
     <el-table :data="this.$store.state.menu" style="width: 100%">
       <el-table-column prop="index" label="序号"> </el-table-column>
-      <el-table-column
-        prop="filename"
-        label="文件名"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column prop="filename" label="文件名" :show-overflow-tooltip="true">
       </el-table-column>
       <el-table-column label="下载">
         <template slot-scope="scope">
-          <a
-            :download="scope.row.filename"
-            :href="'./public/files/' + scope.row.filename"
-            >下载</a
-          >
+          <a :download="scope.row.filename" :href="'./public/files/' + scope.row.filename">下载</a>
         </template>
       </el-table-column>
       <el-table-column label="预览">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="default"
-            @click="
-              preview(scope.row.filename, '/public/files/' + scope.row.filename)
-            "
-            >预览</el-button
-          >
+          <el-button type="primary" size="default" @click="
+            preview(scope.row.filename, '/public/files/' + scope.row.filename)
+          ">预览</el-button>
         </template>
       </el-table-column>
       <el-table-column label="删除">
         <template slot-scope="scope">
-          <el-button
-            type="danger"
-            size="default"
-            @click="open(scope.row.filename)"
-            >删除</el-button
-          >
+          <el-button type="danger" size="default" @click="open(scope.row.filename)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog
-      title="删除确认"
-      :visible.sync="DeleteDialog"
-      width="fit-content"
-      center
-    >
+    <el-dialog title="删除确认" :visible.sync="DeleteDialog" width="fit-content" center>
       <span>是否确认删除文件{{ file }}</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="DeleteDialog = false">取 消</el-button>
@@ -54,89 +31,68 @@
       </span>
     </el-dialog>
     <div>
-      <el-dialog
-        title="预览窗口"
-        :visible.sync="centerDialogVisible"
-        width="60%"
-        center
-        @close="Pclose"
-      >
-        <img
-          :src="url"
-          alt=""
-          v-if="this.pics.includes(this.type)"
-          class="perv"
-        />
-        <audio
-          :src="url"
-          v-else-if="this.audios.includes(this.type)"
-          controls
-          class="perv"
-          ref="audio"
-        ></audio>
-        <video
-          :src="url"
-          v-else-if="this.videos.includes(this.type)"
-          controls
-          class="perv"
-          ref="video"
-        ></video>
+      <el-dialog title="预览窗口" :visible.sync="centerDialogVisible" width="60%" center @close="Pclose">
+        <img :src="url" alt="" v-if="this.pics.includes(this.type)" class="perv" />
+        <audio :src="url" v-else-if="this.audios.includes(this.type)" controls class="perv" ref="audio"></audio>
+        <video :src="url" v-else-if="this.videos.includes(this.type)" controls class="perv" ref="video"></video>
+        <object v-else-if="this.texts.includes(this.type)" :data="url" class="perv" type="application/pdf"></object>
         <span v-else class="perv">浏览器不支持此类型文件!</span>
       </el-dialog>
     </div>
+
+   
   </div>
 </template>
 
 <script lang="js">
-import { DeleteF,getInfo } from "@/apis";
+import { DeleteF, getInfo } from "@/apis";
 export default {
   name: "App",
   data() {
     return {
-      url:"",
-      centerDialogVisible:false,
-      DeleteDialog:false,
-      file:"",
-      type:"",
-      pics:['jpg', 'png', 'webp', 'jpeg', 'bmp', 'gif','apng','avif','ico'],
-      audios:['mp3', 'ogg','wav'],
-      videos:['mp4','webm'],
-      texts:['pdf','txt'],
-      reader:null
+      url: "",
+      centerDialogVisible: false,
+      DeleteDialog: false,
+      file: "",
+      type: "",
+      pics: ['jpg', 'png', 'webp', 'jpeg', 'bmp', 'gif', 'apng', 'avif', 'ico'],
+      audios: ['mp3', 'ogg', 'wav'],
+      videos: ['mp4', 'webm'],
+      texts: ['pdf', 'txt','json','md','html'],
+      reader: null
     };
   },
   methods: {
     getMenu() {
-      getInfo().then((res)=>{
+      getInfo().then((res) => {
         // console.log('getInfo',res);
-        this.$store.dispatch("updata",res)
+        this.$store.dispatch("updata", res)
       })
     },
 
-    Pclose(){
-      if(this.$refs.audio){
+    Pclose() {
+      if (this.$refs.audio) {
         this.$refs.audio.pause();
-      }else if(this.$refs.video){
+      } else if (this.$refs.video) {
         this.$refs.video.pause()
       }
     },
 
-    preview(filename,value){
-      let mat=filename.match(/\.\w*$/g)[0]
-      this.type=mat.replace(".","")
-      if(this.texts.includes(this.type)){
-        console.log('pdf,txt');
+    preview(filename, value) {
+      let mat = filename.match(/\.\w*$/g)[0]
+      this.type = mat.replace(".", "")
+      if (this.texts.includes(this.type)) {
+        this.url='http://'+this.ip+':8888/public/files/'+encodeURIComponent(filename)
       }
-      else if(this.Dev){
-        this.url=this.globalUrl+value
-      }else{
-        this.url=value
+      else if (this.Dev) {
+        this.url = this.globalUrl + value
+      } else {
+        this.url = value
       }
-      this.centerDialogVisible=true
-
+      this.centerDialogVisible = true
     },
 
-    Delete(){
+    Delete() {
       DeleteF(this.file).then(
         (res) => {
           this.$message({
@@ -152,28 +108,28 @@ export default {
           });
         });
       this.getMenu();
-      this.DeleteDialog=false
+      this.DeleteDialog = false
     },
 
     open(filename) {
-      this.file=filename
-      this.DeleteDialog=true
+      this.file = filename
+      this.DeleteDialog = true
     },
   },
   mounted() {
     this.getMenu();
-    if(this.ws){
-      this.ws.onmessage=(data)=>{
-      // console.log(data.data);
-      const msg=data.data
-      if(msg==='upload'||msg==='delete'){
-        this.getMenu()
+    if (this.ws) {
+      this.ws.onmessage = (data) => {
+        // console.log(data.data);
+        const msg = data.data
+        if (msg === 'upload' || msg === 'delete') {
+          this.getMenu()
         }
       }
     }
-   else {
+    else {
       window.timer = setInterval(() => {
-       this.getMenu()
+        this.getMenu()
       }, 3000)
     }
   },
@@ -192,6 +148,7 @@ a {
 
 .perv {
   width: 100%;
+  min-height: 50vmin;
   max-height: 60vh;
   object-fit: contain;
 }
