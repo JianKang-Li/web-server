@@ -19,6 +19,7 @@ new Vue({
   created() {
     getIP().then(res => {
       let ip = res
+      Vue.prototype.ip = ip
       let ws = new WebSocket(`ws://${ip}:8089`)
       ws.onopen = () => {
         console.log('ws open');
