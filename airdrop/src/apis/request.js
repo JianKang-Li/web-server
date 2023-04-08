@@ -4,7 +4,7 @@ class Request {
   constructor() {
     this._axios = axios.create({
       // baseURL: "http://httpbin.org/",
-      // baseURL: "http://192.168.1.4:8888",
+      baseURL: "http://192.168.1.103:8888",
       // baseURL: "http://192.168.1.102:8888"
       // baseURL: "http://172.30.32.17:8888"
     });
@@ -13,6 +13,5 @@ class Request {
     })
   }
 }
-
 
 export default new Request();

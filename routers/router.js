@@ -2,9 +2,11 @@ var express = require("express");
 var router = express.Router();
 var multiparty = require("multiparty");
 var fs = require("fs");
+const getIPAddress = require('../ip')
 const findPort = require('../port')
 
 let wss = null
+let Wsport = null
 findPort(8089, (port) => {
   /* 创建webSocket实例 */
   const WebSocket = require('ws')
@@ -19,9 +21,9 @@ findPort(8089, (port) => {
     });
   });
 
+  Wsport = port
   console.log(`ws run at ws://127.0.0.1:${port}`);
 })
-
 
 function wsSend(text) {
   wss.clients.forEach(cl => {
@@ -29,8 +31,10 @@ function wsSend(text) {
   })
 }
 
+var ip = getIPAddress();
+
 router.get('/ip', function (req, res, next) {
-  res.send()
+  res.send({ ip, port: Wsport })
 })
 
 router.get("/", function (req, res) {
