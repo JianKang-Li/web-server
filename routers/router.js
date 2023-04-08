@@ -38,7 +38,7 @@ router.get('/ip', function (req, res, next) {
 })
 
 router.get("/", function (req, res) {
-  res.render("../views/index.html");
+  res.render("../airdrop/dist/index.html");
 });
 
 router.get("/menu", function (req, res, next) {

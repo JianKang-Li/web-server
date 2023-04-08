@@ -9,7 +9,7 @@ findPort(8888, (port) => {
   app.engine("html", require("express-art-template"));
   app.use("/public", express.static("./public"));
   app.use("/file", express.static("./public/files/"));
-  app.use(express.static(__dirname + '/views'));
+  app.use(express.static('./airdrop/dist/'));
   // app.use("/node_modules", express.static("node_modules"));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
@@ -30,8 +30,6 @@ findPort(8888, (port) => {
     res.send("服务器出错了！");
     next();
   });
-
-
 
   var ip = getIPAddress();
 
