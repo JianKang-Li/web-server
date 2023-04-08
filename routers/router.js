@@ -2,19 +2,26 @@ var express = require("express");
 var router = express.Router();
 var multiparty = require("multiparty");
 var fs = require("fs");
+const findPort = require('../port')
 
-/* 创建webSocket实例 */
-const WebSocket = require('ws')
+let wss = null
+findPort(8089, (port) => {
+  /* 创建webSocket实例 */
+  const WebSocket = require('ws')
 
-const wss = new WebSocket.Server({ port: 8089 });
-wss.on('connection', function (ws) {
-  console.log('client connected');
-  ws.on('message', function (data, isBinary) {
-    const text = isBinary ? data : data.toString()
-    // console.log(text);
+  wss = new WebSocket.Server({ port });
+  wss.on('connection', function (ws) {
+    console.log('client connected');
+    ws.on('message', function (data, isBinary) {
+      const text = isBinary ? data : data.toString()
+      // console.log(text);
 
+    });
   });
-});
+
+  console.log(`ws run at ws://127.0.0.1:${port}`);
+})
+
 
 function wsSend(text) {
   wss.clients.forEach(cl => {
@@ -128,9 +135,6 @@ router.get('/clear', function (req, res, next) {
     message: "cleaned"
   })
 })
-
-
-console.log('ws run at ws://127.0.0.1:8089');
 
 
 module.exports = router;
