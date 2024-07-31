@@ -99,7 +99,7 @@
 </template>
 
 <script lang="js">
-import { DeleteF, getInfo } from "@/apis";
+import { DeleteF, getInfo, getIP } from "@/apis";
 export default {
   name: "App",
   data() {
@@ -167,9 +167,20 @@ export default {
       this.DeleteDialog = true
     },
   },
-  mounted() {
-    this.getMenu();
-    if (this.ws) {
+  async mounted() {
+    await getIP().then(res => {
+      let ip = res.ip
+      let port = res.port
+      let ws = new WebSocket(`ws://${ip}:${port}`)
+      ws.onopen = () => {
+        console.log('ws open');
+      }
+      ws.onclose = () => {
+        this.$message.error('WebSocket已断开')
+      }
+      this.ws = ws
+    }).then(() => {
+      this.getMenu()
       this.ws.onmessage = (data) => {
         // console.log(data.data);
         const msg = data.data
@@ -177,12 +188,11 @@ export default {
           this.getMenu()
         }
       }
-    }
-    else {
+    }).catch(() => {
       window.timer = setInterval(() => {
         this.getMenu()
       }, 3000)
-    }
+    })
   },
 
   beforeDestroy() {

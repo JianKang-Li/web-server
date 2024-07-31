@@ -22,3 +22,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### ToDo
+[] 实现 excel，ppt，word 的预览 https://github.com/501351981/vue-office
