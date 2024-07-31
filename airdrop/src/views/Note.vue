@@ -1,5 +1,5 @@
 <template>
-  <div class="conatiner">
+  <div class="container">
     <Code :code="code" @change="changeNote"></Code>
   </div>
 </template>

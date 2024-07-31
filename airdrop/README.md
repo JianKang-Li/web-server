@@ -1,27 +1,17 @@
 # airdrop
 
-## Project setup
-```
-npm install
-```
+## 前端文件
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+位置：airdrop
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## 后端文件
 
-### Lints and fixes files
-```
-npm run lint
-```
+位置：web-server 下
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 使用
+
+启动命令：`yarn run dev` (前后端项目需单独启动)
 
 ### ToDo
-[] 实现 excel，ppt，word 的预览 https://github.com/501351981/vue-office
+
+[] 实现 excel，ppt，word 的预览 <https://github.com/501351981/vue-office>

@@ -9,6 +9,10 @@ export const getInfo = (path = '') => {
   })
 }
 
+export const notifyUpdate = () => {
+  return request._axios.get('/update')
+}
+
 // 删除文件
 export const DeleteF = (filename, path) => {
   return request._axios.get(`/delete?file=${filename}&path=${path}`)

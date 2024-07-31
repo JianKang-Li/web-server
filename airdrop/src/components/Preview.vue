@@ -43,7 +43,7 @@ const url = computed(() => {
 })
 
 const type = computed(() => {
-  let mat = fileName.value.match(/\.\w*$/g)[0]
+  let mat = fileName.value.match(/\.[0-9a-zA-Z-_]*$/g)[0]
   return mat.replace(".", "")
 })
 
