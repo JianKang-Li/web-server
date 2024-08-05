@@ -22,3 +22,10 @@ export const postT = (data) => {
 export const cleanT = () => {
   return request._axios.get('/clear')
 }
+
+// 登录
+export const login = (params) => {
+  return request._axios.post('/login', {
+    ...params
+  })
+}

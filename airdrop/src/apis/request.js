@@ -7,6 +7,7 @@ class Request {
       // baseURL: "http://192.168.1.103:8888",
       // baseURL: "http://192.168.1.102:8888"
       // baseURL: "http://172.30.32.17:8888"
+      baseURL: 'http://127.0.0.1:8888'
     });
     this._axios.interceptors.response.use(function (res) {
       return res.data
