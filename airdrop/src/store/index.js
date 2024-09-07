@@ -5,17 +5,17 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 
   state: {
-    menu: []
+    menu: [],
+    path: ''
   },
   actions: {
-    updata(context, value) {
-      // console.log(value);
-      context.commit('flash', value)
+    updata(context, { key, value }) {
+      context.commit('flash', { key, value })
     }
   },
   mutations: {
-    flash(state, value) {
-      state.menu = value
+    flash(state, { key, value }) {
+      state[key] = value
     }
   }
 })

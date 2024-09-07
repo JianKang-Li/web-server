@@ -1,27 +1,27 @@
-const net = require('net');
+const net = require('net')
 
 const tryUsePort = async function (port, portAvailableCallback) {
   function portUsed(port) {
     return new Promise((resolve, reject) => {
-      let server = net.createServer().listen(port);
+      let server = net.createServer().listen(port)
       server.on('listening', function () {
-        server.close();
-        resolve(port);
-      });
+        server.close()
+        resolve(port)
+      })
       server.on('error', function (err) {
         if (err.code == 'EADDRINUSE') {
-          resolve(err);
+          resolve(err)
         }
-      });
-    });
+      })
+    })
   }
 
-  let res = await portUsed(port);
+  let res = await portUsed(port)
   if (res instanceof Error) {
-    port++;
-    tryUsePort(port, portAvailableCallback);
+    port++
+    tryUsePort(port, portAvailableCallback)
   } else {
-    portAvailableCallback(port);
+    portAvailableCallback(port)
   }
 }
 
