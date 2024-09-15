@@ -1,17 +1,13 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import store from "./store"
-
-
-Vue.config.productionTip = false
-Vue.prototype.Dev = false;
-Vue.use(ElementUI)
+import ElementUI from 'element-plus'
+import 'element-plus/dist/index.css'
+import { createPinia } from 'pinia'
 import router from './router'
+import initWs from './ws'
 
-new Vue({
-  render: h => h(App),
-  store,
-  router,
-}).$mount('#app')
+const app = createApp(App)
+const pinia = createPinia()
+
+app.use(ElementUI).use(router).use(pinia).mount('#app')
+initWs()

@@ -1,11 +1,11 @@
-import request from "./request"
+import request from './request'
 
 // 获取目录
 export const getInfo = (path = '') => {
-  return request._axios.get("/menu", {
+  return request._axios.get('/menu', {
     params: {
-      path
-    }
+      path,
+    },
   })
 }
 

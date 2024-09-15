@@ -1,26 +1,27 @@
 <template>
-  <el-dialog title="删除确认" :visible.sync="showModal" width="fit-content" center>
+  <el-dialog title="删除确认" v-model="showModal" width="fit-content" center>
     <span>文件夹名：</span><el-input v-model="dirName" class="dir-input"></el-input>
-    <span slot="footer" class="dialog-footer">
+    <template #footer>
       <el-button @click="showModal = false">取 消</el-button>
       <el-button type="primary" @click="submit">确 定</el-button>
-    </span>
+    </template>
   </el-dialog>
 </template>
+
 <script>
-import { createDirApi } from '@/apis';
+import { createDirApi } from '@/apis'
 export default {
   name: 'CreateDir',
   props: {
     path: {
       type: String,
-      require: true
-    }
+      require: true,
+    },
   },
   data() {
     return {
       showModal: false,
-      dirName: ''
+      dirName: '',
     }
   },
   methods: {
@@ -29,21 +30,23 @@ export default {
     },
     submit() {
       if (this.dirName.trim()) {
-        createDirApi(this.dirName, this.path).then(() => {
-          this.$message({
-            type: "success",
-            message: '创建文件夹成功',
+        createDirApi(this.dirName, this.path)
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '创建文件夹成功',
+            })
+            this.showModal = false
           })
-          this.showModal = false
-        }).catch(e => {
-          console.log(e)
-          this.$message({
-            type: "error",
-            message: '创建文件夹失败',
+          .catch((e) => {
+            console.log(e)
+            this.$message({
+              type: 'error',
+              message: '创建文件夹失败',
+            })
           })
-        })
       }
-    }
-  }
+    },
+  },
 }
 </script>

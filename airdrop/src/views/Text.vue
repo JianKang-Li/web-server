@@ -1,16 +1,9 @@
 <template>
   <div>
-    <router-link to="/"
-      ><el-button type="primary" size="mini">文件传输</el-button></router-link
-    >
+    <router-link to="/"><el-button type="primary">文件传输</el-button></router-link>
     <div class="content">
-      <el-input
-        class="control_text"
-        resize="none"
-        :autosize="{ minRows: 6, maxRows: 10 }"
-        type="textarea"
-        v-model="text"
-      ></el-input>
+      <el-input class="control_text" resize="none" :autosize="{ minRows: 6, maxRows: 10 }" type="textarea"
+        v-model="text"></el-input>
       <div class="btns">
         <el-button type="primary" @click="postText">发送</el-button>
         <el-button type="danger" @click="clean">清除</el-button>
@@ -18,64 +11,67 @@
     </div>
   </div>
 </template>
+
 <script>
-import { postT, cleanT } from "@/apis";
+import { postT, cleanT } from '@/apis'
+import { useDataStore } from '@/store'
 export default {
   data() {
     return {
-      text: "",
-    };
+      text: '',
+      store: useDataStore()
+    }
   },
   methods: {
     postText() {
       let data = {
         text: this.text,
-      };
+      }
       postT(data).then((res) => {
         // console.log(res);
         if (res.status === 200) {
           this.$notify({
-            title: "成功",
-            message: "发送成功",
-            type: "success",
-          });
+            title: '成功',
+            message: '发送成功',
+            type: 'success',
+          })
         }
-      });
+      })
     },
     write(msg) {
-      this.text += msg;
+      this.text += msg
     },
     clear() {
-      this.text = "";
+      this.text = ''
     },
     clean() {
       cleanT().then((res) => {
         // console.log(res);
         if (res.status === 200) {
           this.$notify({
-            title: "成功",
-            message: "清除成功",
-            type: "success",
-          });
-          this.clear();
+            title: '成功',
+            message: '清除成功',
+            type: 'success',
+          })
+          this.clear()
         }
-      });
+      })
     },
   },
   mounted() {
-    this.ws.onmessage = (data) => {
-      // console.log(data.data);
-      const msg = JSON.parse(data.data);
-      if (msg.status === "write") {
-        this.clear();
-        this.write(msg.content);
-      } else if (msg.status === "clear") {
-        this.clear();
+    this.store.wsObj.ws.onmessage = (data) => {
+      const msg = JSON.parse(data.data)
+      if (msg.status === 'write') {
+        this.clear()
+        this.write(msg.content)
+      } else if (msg.status === 'clear') {
+        this.clear()
       }
-    };
+    }
   },
-};
+}
 </script>
+
 <style scoped>
 div {
   width: 100%;

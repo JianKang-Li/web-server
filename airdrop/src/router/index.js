@@ -1,24 +1,19 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import File from '../views/File.vue'
+import { createWebHashHistory, createRouter } from 'vue-router'
 
-Vue.use(VueRouter)
-
-const router = new VueRouter({
-  mode: 'hash',
-  // base: import.meta.env.BASE_URL,
+const router = createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
       name: 'file',
-      component: File
+      component: ()=> import('../views/File.vue'),
     },
     {
       path: '/text',
       name: 'Text',
-      component: () => import('../views/Text.vue')
-    }
-  ]
+      component: () => import('../views/Text.vue'),
+    },
+  ],
 })
 
 export default router
