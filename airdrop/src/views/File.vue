@@ -1,6 +1,5 @@
 <template>
   <div>
-    <router-link to="/text"><el-button type="primary">文本上传</el-button></router-link>
     <UpLoad />
     <FileList />
   </div>

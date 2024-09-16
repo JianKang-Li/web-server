@@ -11,7 +11,7 @@ async function initWs() {
     const wsPort = res.wsPort
     let ws = new WebSocket(`ws://${ip}:${wsPort}`)
     ws.onopen = () => {
-      console.log('ws open');
+      console.log('ws open')
     }
     ws.onclose = () => {
       ElNotification({

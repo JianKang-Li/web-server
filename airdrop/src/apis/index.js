@@ -35,3 +35,15 @@ export const createDirApi = (dirName, path) => {
     path
   })
 }
+
+// 获取记事本内容
+export const getNote = () => {
+  return request._axios.get('/note/read')
+}
+
+// 修改记事本内容
+export const editNote = (context) => {
+  return request._axios.post('/note/edit', {
+    context
+  })
+}

@@ -1,11 +1,10 @@
-var express = require("express")
-var router = express.Router()
-var multiparty = require("multiparty")
-var fs = require("fs")
+const express = require("express")
+const router = express.Router()
+const multiparty = require("multiparty")
+const fs = require("fs")
 const getIPAddress = require('../ip')
 const findPort = require('../port')
 const webFs = require('../utils/webFs')
-
 
 const webfs = new webFs()
 let wss = null
@@ -175,6 +174,5 @@ router.get('/clear', function (req, res, next) {
     message: "cleaned"
   })
 })
-
 
 module.exports = router

@@ -15,12 +15,12 @@
       <el-table-column prop="index" label="序号"> </el-table-column>
       <el-table-column label="文件名" :show-overflow-tooltip="true">
         <template #default="scope">
-          <div>
+          <div class="sm">
             <el-link :underline="false" v-if="scope.row.isDir" href="javascript:" type="primary"
               @click="go(scope.row.filename)">{{
                 scope.row.filename
               }}</el-link>
-            <span v-else class="sm">{{ scope.row.filename }}</span>
+            <span v-else>{{ scope.row.filename }}</span>
           </div>
         </template>
       </el-table-column>
@@ -127,22 +127,22 @@ export default {
             this.$message({
               type: "success",
               message: `${res.msg}`,
-            });
+            })
             this.ws.send('delete')
           } else {
             this.$message({
               type: "error",
               message: `${res.msg}`,
-            });
+            })
           }
         })
         .catch((error) => {
           this.$message({
             type: "error",
             message: `${error}`,
-          });
-        });
-      this.getMenu();
+          })
+        })
+      this.getMenu()
       this.DeleteDialog = false
     },
 
@@ -186,5 +186,12 @@ a {
 .path {
   margin-top: 10px;
   display: flex;
+}
+
+.sm {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 20vw;
+  text-overflow: ellipsis;
 }
 </style>

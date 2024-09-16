@@ -16,6 +16,8 @@
         <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
       </template>
     </el-dialog>
+
+    <el-divider />
   </div>
 </template>
 

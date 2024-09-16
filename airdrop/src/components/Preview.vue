@@ -23,7 +23,7 @@ const video = ref(null)
 
 const beforeClose = () => {
   if (audio.value) {
-    audio.value.pause();
+    audio.value.pause()
   } else if (video.value) {
     video.value.pause()
   }
