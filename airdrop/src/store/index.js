@@ -1,23 +1,19 @@
-import Vue from "vue";
-import Vuex from "vuex"
-Vue.use(Vuex)
+import { defineStore } from 'pinia'
 
-const store = new Vuex.Store({
-
-  state: {
+export const useDataStore = defineStore('data', {
+  state: () => ({
     menu: [],
-    path: ''
-  },
+    path: '',
+    wsObj: {
+      ws: null,
+      ip: '',
+      port: 8888,
+      wsPort: 8089
+    }
+  }),
   actions: {
-    updata(context, { key, value }) {
-      context.commit('flash', { key, value })
-    }
-  },
-  mutations: {
-    flash(state, { key, value }) {
-      state[key] = value
-    }
+    update({ key, value }) {
+      this[key] = value
+    },
   }
 })
-
-export default store

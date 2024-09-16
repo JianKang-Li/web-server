@@ -1,20 +1,18 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header><Ahead /></el-header>
-      <el-main>
+      <AsideBar></AsideBar>
+      <el-header>
+        <Ahead />
+      </el-header>
+      <el-main class="main">
         <router-view> </router-view>
       </el-main>
       <el-footer>
         <div class="footer">
           <p>
             Design By
-            <el-link
-              href="https://github.com/JianKang-Li"
-              target="_blank"
-              type="primary"
-              >ljk</el-link
-            >
+            <el-link href="https://github.com/JianKang-Li" target="_blank" type="primary">ljk</el-link>
           </p>
         </div>
       </el-footer>
@@ -22,12 +20,12 @@
   </div>
 </template>
 
-<script lang="js">
-
+<script>
 import Ahead from "./components/Ahead.vue"
+import AsideBar from './components/AsideBar.vue'
 export default {
   name: "App",
-  components:{Ahead}
+  components: { Ahead, AsideBar }
 }
 </script>
 
@@ -57,5 +55,9 @@ a {
 
 .footer a {
   font-size: 1rem;
+}
+
+.main {
+  height: calc(100vh - 140px);
 }
 </style>

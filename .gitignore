@@ -5,6 +5,7 @@ yarn.lock
 
 .DS_Store
 /dist
+files/note.txt
 
 
 # local env files

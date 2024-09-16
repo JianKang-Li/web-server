@@ -1,20 +1,25 @@
 <template>
   <div class="upload">
     <el-upload ref="upload" class="upload-demo" action="" drag :http-request="httpRequest" :auto-upload="false"
-      :on-progress="proUpdata" :multiple="true" :file-list="fileList" :on-remove="handleRemove"
+      :on-progress="proUpData" :multiple="true" :file-list="fileList" :on-remove="handleRemove"
       :on-change="uploadChange">
-      <i class="el-icon-upload"></i>
+      <el-icon class="icon"><upload-filled /></el-icon>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
     </el-upload>
     <el-progress id="progress" :percentage="percentage" :format="format" :status="status"></el-progress>
-    <el-button type="primary" size="default" @click="submitUpload">上传</el-button>
+    <el-button type="primary" @click="submitUpload">上传</el-button>
   </div>
 </template>
 
 <script>
-import request from "@/apis/request"
-import { getInfo } from "@/apis"
+import { UploadFilled } from '@element-plus/icons-vue'
+import request from '@/apis/request'
+import { getInfo } from '@/apis'
+import { useDataStore } from "@/store"
 export default {
+  components: {
+    UploadFilled,
+  },
   data() {
     return {
       percentage: 0,
@@ -22,6 +27,7 @@ export default {
       status: null,
       param: {},
       progressFlag: true,
+      store: useDataStore()
     }
   },
   methods: {
@@ -30,14 +36,14 @@ export default {
     },
     submitUpload() {
       if (this.fileList.length < 1) {
-        this.$message.error("请选择文件")
+        this.$message.error('请选择文件')
       } else {
         this.$refs.upload.submit()
         this.postFile()
       }
     },
 
-    proUpdata(event) {
+    proUpData(event) {
       this.percentage = parseInt(event.percent) // 动态获取文件上传进度
       if (this.percentage >= 100) {
         this.percentage = 100
@@ -50,8 +56,8 @@ export default {
     postFile() {
       request
         ._axios({
-          method: "post",
-          url: `/upload?path=${this.$store.state.path}`,
+          method: 'post',
+          url: `/upload?path=${this.store.path}`,
           data: this.param,
           onUploadProgress: (progressEvent) => {
             const complete = parseInt(
@@ -63,18 +69,18 @@ export default {
         .then((res) => {
           if (res.status === 200) {
             this.$notify({
-              title: "成功",
-              message: "文件上传成功",
-              type: "success",
+              title: '成功',
+              message: '文件上传成功',
+              type: 'success',
             })
             this.percentage = 0
             getInfo().then((res) => {
-              this.$store.dispatch("updata", res)
+              this.store.update(res)
             })
             this.$refs.upload.clearFiles()
           } else {
             this.$notify.error({
-              title: "错误",
+              title: '错误',
               message: res.message,
             })
             this.progressFlag = false
@@ -108,7 +114,7 @@ export default {
   },
   watch: {
     status() {
-      return this.percentage === 100 ? "success" : ""
+      return this.percentage === 100 ? 'success' : ''
     },
   },
 }
@@ -128,9 +134,23 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 30vw;
+  height: fit-content;
+  margin-bottom: 20px;
+}
+
+.icon {
+  height: 20vh;
+  width: 20vw;
+}
+
+.icon :deep(svg) {
+  height: 70%;
+  width: 70%;
 }
 
 #progress {
+  margin-top: 10px;
   max-width: 40rem;
   width: 70%;
   position: static;

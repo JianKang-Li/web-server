@@ -1,15 +1,14 @@
-var express = require("express")
-var router = express.Router()
-var multiparty = require("multiparty")
-var fs = require("fs")
+const express = require("express")
+const router = express.Router()
+const multiparty = require("multiparty")
+const fs = require("fs")
 const getIPAddress = require('../ip')
 const findPort = require('../port')
 const webFs = require('../utils/webFs')
 
-
 const webfs = new webFs()
 let wss = null
-let Wsport = null
+let wsPort = null
 findPort(8089, (port) => {
   /* 创建webSocket实例 */
   const WebSocket = require('ws')
@@ -23,20 +22,20 @@ findPort(8089, (port) => {
     })
   })
 
-  Wsport = port
+  wsPort = port
   console.log(`ws run at ws://127.0.0.1:${port}`)
 })
 
 function wsSend(text) {
   wss.clients.forEach(cl => {
-    cl.send(text)
+    cl.send(JSON.stringify(text))
   })
 }
 
 var ip = getIPAddress()
 
 router.get('/ip', function (req, res, next) {
-  res.send({ ip, wsport: Wsport, port: 8888 })
+  res.send({ ip, wsPort: wsPort, port: 8888 })
 })
 
 router.get("/", function (req, res) {
@@ -92,7 +91,9 @@ router.post("/upload", function (req, res, next) {
         status: 200,
         message: "Success"
       })
-      wsSend('upload')
+      wsSend({
+        status: 'upload',
+      })
     }
   })
 })
@@ -112,7 +113,9 @@ router.get("/delete", function (req, res, next) {
       status: 200,
       msg: '删除成功'
     })
-    wsSend('delete')
+    wsSend({
+      status: 'delete',
+    })
   } catch (e) {
     // console.log(e)
     res.send({
@@ -131,8 +134,7 @@ router.post('/write', function (req, res, next) {
       status: 'write',
       content: text
     }
-    const data = JSON.stringify(msg)
-    wsSend(data)
+    wsSend(msg)
     res.send({
       status: 200,
       message: "writed"
@@ -166,13 +168,11 @@ router.get('/clear', function (req, res, next) {
   const msg = {
     status: 'clear'
   }
-  const data = JSON.stringify(msg)
-  wsSend(data)
+  wsSend(msg)
   res.send({
     status: 200,
     message: "cleaned"
   })
 })
-
 
 module.exports = router
