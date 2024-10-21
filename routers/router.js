@@ -74,18 +74,19 @@ router.post("/upload", function (req, res, next) {
     } else {
       const path = req.query.path
       for (let i = 0; i < files.file.length; i++) {
-        let file = files.file[i]
-        let name = file.originalFilename
-        fs.rename(file.path, `./public/files/${path}/${name}`, (err) => {
-          if (err) {
-            res.setHeader("Content-Type", "application/text")
-            res.status(500).send({
-              status: 500,
-              message: "Error"
-            })
-            next(err)
-          }
-        })
+        console.log(files)
+        // let file = files.file[i]
+        // let name = file.originalFilename
+        // fs.rename(file.path, `./public/files/${path}/${name}`, (err) => {
+        //   if (err) {
+        //     res.setHeader("Content-Type", "application/text")
+        //     res.status(500).send({
+        //       status: 500,
+        //       message: "Error"
+        //     })
+        //     next(err)
+        //   }
+        // })
       }
       res.status(200).send({
         status: 200,
