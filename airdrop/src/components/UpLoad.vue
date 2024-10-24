@@ -13,8 +13,9 @@
 
 <script>
 import { UploadFilled } from '@element-plus/icons-vue'
-import request from '@/apis/request'
-import { getInfo } from '@/apis'
+// import request from '@/apis/request'
+// import { getInfo } from '@/apis'
+import FileUtil from "@/utils/file"
 import { useDataStore } from "@/store"
 export default {
   components: {
@@ -54,43 +55,44 @@ export default {
     },
 
     postFile() {
-      request
-        ._axios({
-          method: 'post',
-          url: `/upload?path=${this.store.path}`,
-          data: this.param,
-          onUploadProgress: (progressEvent) => {
-            const complete = parseInt(
-              (progressEvent.loaded / progressEvent.total) * 100
-            )
-            this.percentage = complete
-          },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            this.$notify({
-              title: '成功',
-              message: '文件上传成功',
-              type: 'success',
-            })
-            this.percentage = 0
-            getInfo().then((res) => {
-              this.store.update(res)
-            })
-            this.$refs.upload.clearFiles()
-          } else {
-            this.$notify.error({
-              title: '错误',
-              message: res.message,
-            })
-            this.progressFlag = false
-            this.percentage = 0
-            this.$refs.upload.clearFiles()
-          }
-        })
-        .catch((e) => {
-          console.log(e)
-        })
+      console.log(FileUtil.fileSplit(this.param.get('file')))
+      // request
+      //   ._axios({
+      //     method: 'post',
+      //     url: `/upload?path=${this.store.path}`,
+      //     data: this.param,
+      //     onUploadProgress: (progressEvent) => {
+      //       const complete = parseInt(
+      //         (progressEvent.loaded / progressEvent.total) * 100
+      //       )
+      //       this.percentage = complete
+      //     },
+      //   })
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       this.$notify({
+      //         title: '成功',
+      //         message: '文件上传成功',
+      //         type: 'success',
+      //       })
+      //       this.percentage = 0
+      //       getInfo().then((res) => {
+      //         this.store.update(res)
+      //       })
+      //       this.$refs.upload.clearFiles()
+      //     } else {
+      //       this.$notify.error({
+      //         title: '错误',
+      //         message: res.message,
+      //       })
+      //       this.progressFlag = false
+      //       this.percentage = 0
+      //       this.$refs.upload.clearFiles()
+      //     }
+      //   })
+      //   .catch((e) => {
+        //   console.log(e)
+        // })
     },
 
     httpRequest() { },
