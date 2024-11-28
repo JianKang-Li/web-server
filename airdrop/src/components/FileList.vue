@@ -11,7 +11,7 @@
         </el-icon>
       </el-button>
     </div>
-    <el-table :data="store.menu" style="width: 100%">
+    <el-table :data="fileList" style="width: 100%">
       <el-table-column prop="index" label="序号"> </el-table-column>
       <el-table-column label="文件名" :show-overflow-tooltip="true">
         <template #default="scope">
@@ -53,7 +53,7 @@
       </template>
     </el-dialog>
     <createDirModal ref="dir" :path="currentPath"></createDirModal>
-    <Preview :filename="file" ref="privewModal"></Preview>
+    <Preview :filename="file" ref="previewModal"></Preview>
   </div>
 </template>
 
@@ -89,6 +89,9 @@ export default {
       arr.pop()
       return arr.join('/')
     },
+    fileList() {
+      return this.store.menu
+    }
   },
   methods: {
     getMenu() {
@@ -117,7 +120,7 @@ export default {
     },
 
     previewFile(filename) {
-      this.$refs.privewModal.showPreview(filename)
+      this.$refs.previewModal.showPreview(filename)
     },
 
     Delete() {

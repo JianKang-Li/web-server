@@ -1,0 +1,9 @@
+{
+  "words":[
+    "pinia",
+    "axios",
+    "webfs",
+    "btns"
+  ],
+  "ignorePaths":["package.json"]
+}

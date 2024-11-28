@@ -1,8 +1,7 @@
 <template>
   <div class="upload">
     <el-upload ref="upload" class="upload-demo" action="" drag :http-request="httpRequest" :auto-upload="false"
-      :on-progress="proUpData" :multiple="true" :file-list="fileList" :on-remove="handleRemove"
-      :on-change="uploadChange">
+      :multiple="true" :file-list="fileList" :on-remove="handleRemove" :on-change="uploadChange">
       <el-icon class="icon"><upload-filled /></el-icon>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
     </el-upload>
@@ -14,7 +13,8 @@
 <script>
 import { UploadFilled } from '@element-plus/icons-vue'
 import request from '@/apis/request'
-import { getInfo } from '@/apis'
+import { notifyUpdate } from '@/apis'
+import FileUtil from "@/utils/file"
 import { useDataStore } from "@/store"
 export default {
   components: {
@@ -25,7 +25,7 @@ export default {
       percentage: 0,
       fileList: [],
       status: null,
-      param: {},
+      param: [],
       progressFlag: true,
       store: useDataStore()
     }
@@ -38,78 +38,88 @@ export default {
       if (this.fileList.length < 1) {
         this.$message.error('请选择文件')
       } else {
-        this.$refs.upload.submit()
         this.postFile()
       }
     },
 
-    proUpData(event) {
-      this.percentage = parseInt(event.percent) // 动态获取文件上传进度
-      if (this.percentage >= 100) {
-        this.percentage = 100
-        setTimeout(() => {
-          this.percentage = 0
-        }, 100)
-      }
-    },
-
-    postFile() {
-      request
-        ._axios({
-          method: 'post',
-          url: `/upload?path=${this.store.path}`,
-          data: this.param,
-          onUploadProgress: (progressEvent) => {
-            const complete = parseInt(
-              (progressEvent.loaded / progressEvent.total) * 100
-            )
-            this.percentage = complete
-          },
+    upload(formData) {
+      return request
+        ._axios.post(`/upload?path=${this.store.path}`, formData, {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
         })
         .then((res) => {
           if (res.status === 200) {
-            this.$notify({
-              title: '成功',
-              message: '文件上传成功',
-              type: 'success',
-            })
-            this.percentage = 0
-            getInfo().then((res) => {
-              this.store.update(res)
-            })
-            this.$refs.upload.clearFiles()
+            return true
           } else {
             this.$notify.error({
               title: '错误',
               message: res.message,
             })
-            this.progressFlag = false
-            this.percentage = 0
-            this.$refs.upload.clearFiles()
+
+            return false
           }
         })
         .catch((e) => {
-          console.log(e)
+          console.warn(e)
+          return false
         })
+    },
+
+    async postFile() {
+      this.updateFiles()
+      const total = this.fileList.reduce((pre, cur) => {
+        return pre += cur.size
+      }, 0)
+      this.percentage = 0
+
+      let flag = true
+      for (let i = 0; i < this.fileList.length; i++) {
+        const currentFile = this.fileList[i]
+        const list = FileUtil.fileSplit(currentFile, 3 * 1024 * 1024)
+
+        for (let j = 0; j < list.length; j++) {
+          const params = new FormData()
+
+          params.append('file', list[j].raw)
+          params.append('total', list[j].total)
+          params.append('totalSize', list[j].totalSize)
+          params.append('fileName', currentFile.name)
+
+          flag = await this.upload(params)
+
+          if (flag) {
+            this.percentage += (list[j].raw.size / total).toFixed(2) * 100
+          } else {
+            // 重试逻辑
+            console.log('retry')
+          }
+        }
+      }
+
+      if (flag) {
+        setTimeout(() => {
+          this.percentage = 0
+          notifyUpdate()
+        }, 1000)
+        this.$message.success('上传成功')
+        this.$refs.upload.clearFiles()
+      }
     },
 
     httpRequest() { },
 
+    updateFiles() {
+      this.fileList = this.fileList.sort((a, b) => a.size - b.size)
+    },
+
     handleRemove(file, fileList) {
       this.$message.warning(`已移除文件:  ${file.name}!`)
-      // 每移除一个文件,param重新赋值
-      this.param = new FormData()
-      this.fileList = [...fileList]
-      this.fileList.forEach((file) => {
-        this.param.append(`file`, file.raw) // 把单个文件重命名，存储起来（给后台）
-      })
+      this.fileList = fileList
     },
     uploadChange(file, fileList) {
-      this.param = new FormData()
-      this.fileList = [...fileList]
-      this.fileList.forEach((file) => {
-        this.param.append(`file`, file.raw) // 把单个文件重命名，存储起来（给后台）
-      })
+      this.fileList = fileList
     },
   },
   watch: {
@@ -137,6 +147,16 @@ export default {
   width: 30vw;
   height: fit-content;
   margin-bottom: 20px;
+}
+
+@media screen and (max-width: 900px) {
+  .upload-demo {
+    width: 90%;
+  }
+
+  :deep(.el-upload) {
+    width: 100%;
+  }
 }
 
 .icon {

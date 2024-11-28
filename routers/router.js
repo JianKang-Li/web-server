@@ -5,6 +5,14 @@ const fs = require("fs")
 const getIPAddress = require('../ip')
 const findPort = require('../port')
 const webFs = require('../utils/webFs')
+const FileUtil = require('../utils/fileUtil')
+
+// 创建缓存文件夹
+fs.access('./cache', fs.constants.F_OK, (err) => {
+  if (err) {
+    fs.mkdirSync('./cache')
+  }
+})
 
 const webfs = new webFs()
 let wss = null
@@ -66,35 +74,46 @@ router.get("/menu", function (req, res, next) {
 })
 
 router.post("/upload", function (req, res, next) {
-  var form = new multiparty.Form()
-  form.uploadDir = "./files/"
+  const form = new multiparty.Form()
+  form.uploadDir = "./cache"
   form.parse(req, function (err, fields, files) {
+    const path = req.query.path
+    const file = files.file[0]
+    const name = file.originalFilename
+    const fileName = fields.fileName[0]
+    const total = parseInt(fields.total[0])
+    const totalSize = parseInt(fields.totalSize[0])
+
     if (err) {
       next(err)
     } else {
-      const path = req.query.path
-      for (let i = 0; i < files.file.length; i++) {
-        let file = files.file[i]
-        let name = file.originalFilename
-        fs.rename(file.path, `./public/files/${path}/${name}`, (err) => {
-          if (err) {
-            res.setHeader("Content-Type", "application/text")
-            res.status(500).send({
-              status: 500,
-              message: "Error"
-            })
-            next(err)
-          }
-        })
+      fs.rename(file.path, `./public/files/${path}/${name}`, (err) => {
+        if (err) {
+          res.setHeader("Content-Type", "application/text")
+          res.status(500).send({
+            status: 500,
+            message: "Error",
+            fileName: name
+          })
+          next(err)
+          return
+        }
+      })
+
+      if (total > 1 && parseInt(name.match(/\d+$/g)) === total - 1) {
+        FileUtil.mergeFiles(fileName, total, totalSize)
       }
       res.status(200).send({
         status: 200,
         message: "Success"
       })
-      wsSend({
-        status: 'upload',
-      })
     }
+  })
+})
+
+router.get('/update', function (req, res, next) {
+  wsSend({
+    status: 'upload',
   })
 })
 
@@ -137,7 +156,7 @@ router.post('/write', function (req, res, next) {
     wsSend(msg)
     res.send({
       status: 200,
-      message: "writed"
+      message: "wrote"
     })
   }
 })
