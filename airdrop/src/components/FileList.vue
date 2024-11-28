@@ -44,6 +44,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination background layout="prev, pager, next" :total="total" class="w df mt10" @change="pageChange"/>
 
     <el-dialog title="删除确认" v-model="DeleteDialog" width="fit-content" center>
       <span>是否确认删除文件{{ file }}</span>
@@ -63,6 +64,7 @@ import { DeleteF, getInfo } from "@/apis"
 import createDirModal from "./CreateDir.vue"
 import { useDataStore } from '@/store'
 import Preview from './Preview.vue'
+import { ElMessage } from 'element-plus'
 
 export default {
   data() {
@@ -74,7 +76,10 @@ export default {
       currentPath: '',
       store: useDataStore(),
       ip: '',
-      port: ''
+      port: '',
+      currentPage: 1,
+      total: 0,
+      size: 10
     }
   },
   components: {
@@ -95,9 +100,15 @@ export default {
   },
   methods: {
     getMenu() {
-      getInfo(this.currentPath).then((res) => {
+      getInfo(this.currentPath, this.size, this.currentPage).then((res) => {
         this.store.update({ key: 'menu', value: res })
+        this.total = res[0].total
       })
+    },
+
+    pageChange (page) {
+      this.currentPage = page
+      this.getMenu()
     },
 
     refresh(path) {
@@ -127,20 +138,20 @@ export default {
       DeleteF(this.file, this.currentPath).then(
         (res) => {
           if (res.status === 200) {
-            this.$message({
+            ElMessage({
               type: "success",
               message: `${res.msg}`,
             })
             this.ws.send('delete')
           } else {
-            this.$message({
+            ElMessage({
               type: "error",
               message: `${res.msg}`,
             })
           }
         })
         .catch((error) => {
-          this.$message({
+          ElMessage({
             type: "error",
             message: `${error}`,
           })

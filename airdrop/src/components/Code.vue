@@ -1,6 +1,7 @@
 <template>
   <div class="opt mb10">
     <el-button type="primary" v-show="isEdit" @click="save">保存</el-button>
+    <el-button type="danger" v-show="isEdit" @click="cancel">取消</el-button>
     <el-button type="primary" v-show="!isEdit" @click="edit">编辑</el-button>
   </div>
   <div class="code-container" v-show="!isEdit" v-html="tranCodeValue">
@@ -62,6 +63,11 @@ watch(() => props.code, (val) => {
 }, {
   immediate: true
 })
+
+const cancel = () => {
+  code.value = props.code
+  isEdit.value = false
+}
 
 const save = () => {
   tranCode()

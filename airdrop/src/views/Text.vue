@@ -13,6 +13,8 @@
 <script>
 import { postT, cleanT } from '@/apis'
 import { useDataStore } from '@/store'
+import { ElNotification } from 'element-plus'
+
 export default {
   data() {
     return {
@@ -28,7 +30,7 @@ export default {
       postT(data).then((res) => {
         // console.log(res);
         if (res.status === 200) {
-          this.$notify({
+          ElNotification({
             title: '成功',
             message: '发送成功',
             type: 'success',
@@ -46,7 +48,7 @@ export default {
       cleanT().then((res) => {
         // console.log(res);
         if (res.status === 200) {
-          this.$notify({
+          ElNotification({
             title: '成功',
             message: '清除成功',
             type: 'success',

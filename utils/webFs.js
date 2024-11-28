@@ -2,6 +2,7 @@ const fs = require('fs')
 class webFs {
   constructor() {
     this.basePath = './public/files/'
+    this.excludedFiles = ['.gitkeep']
   }
 
   create(type, name, path) {
@@ -26,6 +27,46 @@ class webFs {
         return { status: true }
       }
     }
+  }
+
+  countTotal (path = '') {
+    let idx = 0
+    const menu = fs.readdirSync(`${this.basePath}${path}`, { withFileTypes: true })
+
+    menu.forEach(x => {
+      if (!this.excludedFiles.includes(x.name)) {
+        idx++
+      }
+    })
+
+    return idx
+  }
+
+  read(path, size, page) {
+    const menu1 = []
+    const total = this.countTotal(path)
+    const menu = fs.readdirSync(`${this.basePath}${path}`, { withFileTypes: true })
+
+    for (let i = 1; i <= size; i++) {
+      const index = (page -1) * size + i
+
+      if (index >= menu.length) {
+        break
+      }
+
+      const item = menu[index]
+
+      if (!this.excludedFiles.includes(item.name)) {
+        let obj = {
+          filename: item.name,
+          index,
+          isDir: item.isDirectory(),
+          total
+        }
+        menu1.push(obj)
+      }
+    }
+    return menu1
   }
 }
 

@@ -1,6 +1,6 @@
-var os = require("os")
+const os = require("os")
 
-var getIPAddress = function () {
+const getIPAddress = function () {
   var ipv4 = ""
   var ifaces = os.networkInterfaces()
   // console.log(ifaces) //所有类型的适配器和全部内容

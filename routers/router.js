@@ -47,27 +47,19 @@ router.get('/ip', function (req, res, next) {
 })
 
 router.get("/", function (req, res) {
-  res.render("../airdrop/dist/index.html")
+  const HtmlPath = "../airdrop/dist/index.html"
+
+  res.render(HtmlPath)
 })
 
 router.get("/menu", function (req, res, next) {
   try {
     const path = req.query.path || ''
-    let menu = fs.readdirSync(`./public/files/${path}`, { withFileTypes: true })
-    let menu1 = []
-    let idx = 1
-    menu.forEach((item) => {
-      if (item.name != ".gitkeep") {
-        let obj = {
-          filename: item.name,
-          index: idx,
-          isDir: item.isDirectory()
-        }
-        menu1.push(obj)
-        idx++
-      }
-    })
-    res.send(menu1)
+    const size = req.query.size || 10
+    const page = req.query.page || 1
+    const menu = webfs.read(path, size, page)
+
+    res.send(menu)
   } catch (e) {
     next(e)
   }

@@ -10,3 +10,13 @@
 .mt10 {
   margin-top: 10px;
 }
+
+.w {
+  width: 100%;
+}
+
+.df {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

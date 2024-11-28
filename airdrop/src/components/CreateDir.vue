@@ -10,6 +10,8 @@
 
 <script>
 import { createDirApi } from '@/apis'
+import { ElMessage } from 'element-plus'
+
 export default {
   name: 'CreateDir',
   props: {
@@ -32,7 +34,7 @@ export default {
       if (this.dirName.trim()) {
         createDirApi(this.dirName, this.path)
           .then(() => {
-            this.$message({
+            ElMessage({
               type: 'success',
               message: '创建文件夹成功',
             })
@@ -40,7 +42,7 @@ export default {
           })
           .catch((e) => {
             console.log(e)
-            this.$message({
+            ElMessage({
               type: 'error',
               message: '创建文件夹失败',
             })

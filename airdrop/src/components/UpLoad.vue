@@ -16,6 +16,9 @@ import request from '@/apis/request'
 import { notifyUpdate } from '@/apis'
 import FileUtil from "@/utils/file"
 import { useDataStore } from "@/store"
+import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
+
 export default {
   components: {
     UploadFilled,
@@ -36,7 +39,7 @@ export default {
     },
     submitUpload() {
       if (this.fileList.length < 1) {
-        this.$message.error('请选择文件')
+        ElMessage.error('请选择文件')
       } else {
         this.postFile()
       }
@@ -53,7 +56,7 @@ export default {
           if (res.status === 200) {
             return true
           } else {
-            this.$notify.error({
+            ElNotification.error({
               title: '错误',
               message: res.message,
             })
@@ -103,7 +106,7 @@ export default {
           this.percentage = 0
           notifyUpdate()
         }, 1000)
-        this.$message.success('上传成功')
+        ElMessage.success('上传成功')
         this.$refs.upload.clearFiles()
       }
     },
@@ -115,7 +118,7 @@ export default {
     },
 
     handleRemove(file, fileList) {
-      this.$message.warning(`已移除文件:  ${file.name}!`)
+      ElMessage.warning(`已移除文件:  ${file.name}!`)
       this.fileList = fileList
     },
     uploadChange(file, fileList) {
@@ -180,6 +183,8 @@ export default {
   width: 95vw;
   max-width: 95vw;
   text-align: center;
+  max-height: 20vh;
+  overflow: auto;
 }
 
 :deep(.el-upload-list__item-name) {

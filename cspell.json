@@ -3,7 +3,12 @@
     "pinia",
     "axios",
     "webfs",
-    "btns"
+    "btns",
+    "ifaces",
+    "wlan",
+    "pinia",
+    "apng",
+    "unplugin"
   ],
   "ignorePaths":["package.json"]
 }

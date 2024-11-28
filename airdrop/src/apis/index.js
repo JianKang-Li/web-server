@@ -1,10 +1,12 @@
 import request from './request'
 
 // 获取目录
-export const getInfo = (path = '') => {
+export const getInfo = (path = '', size = 10, page=1) => {
   return request._axios.get('/menu', {
     params: {
       path,
+      size,
+      page
     },
   })
 }
