@@ -1,10 +1,24 @@
 import { createWebHashHistory, createRouter } from 'vue-router'
+import Login from "@/views/Login.vue"
+import { useDataStore } from '../store'
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
       path: '/',
+      name: 'home',
+      redirect: () => {
+        return { path: '/file' }
+      }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
+    },
+    {
+      path: '/file',
       name: 'file',
       component: () => import('../views/File.vue'),
     },
@@ -20,5 +34,16 @@ const router = createRouter({
     },
   ],
 })
+
+router.beforeEach((to, from, next) => {
+  const store = useDataStore()
+
+  if (!store.user?.name && to.path !== '/login') {
+    next('/login')
+  } else {
+    next()
+  }
+})
+
 
 export default router

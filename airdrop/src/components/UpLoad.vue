@@ -75,12 +75,14 @@ export default {
       const total = this.fileList.reduce((pre, cur) => {
         return pre += cur.size
       }, 0)
+
       this.percentage = 0
 
       let flag = true
+
       for (let i = 0; i < this.fileList.length; i++) {
         const currentFile = this.fileList[i]
-        const list = FileUtil.fileSplit(currentFile, 3 * 1024 * 1024)
+        const list = FileUtil.fileSplit(currentFile, 100 * 1024 * 1024)
 
         for (let j = 0; j < list.length; j++) {
           const params = new FormData()

@@ -27,6 +27,7 @@ export default {
       let data = {
         text: this.text,
       }
+
       postT(data).then((res) => {
         // console.log(res);
         if (res.status === 200) {
@@ -61,6 +62,7 @@ export default {
   mounted() {
     this.store.wsObj.ws.onmessage = (data) => {
       const msg = JSON.parse(data.data)
+
       if (msg.status === 'write') {
         this.clear()
         this.write(msg.content)

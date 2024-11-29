@@ -21,6 +21,9 @@ findPort(8888, (port) => {
   const noteRouter = require('./routers/note')
   app.use("/note", noteRouter)
 
+  const userRouter = require('./routers/user')
+  app.use('/user', userRouter)
+
   const Router = require("./routers/router")
   app.use("/", Router)
 

@@ -44,6 +44,7 @@ const url = computed(() => {
 
 const type = computed(() => {
   let mat = fileName.value.match(/\.[0-9a-zA-Z-_]*$/g)[0]
+
   return mat.replace(".", "")
 })
 

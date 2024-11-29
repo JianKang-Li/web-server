@@ -53,3 +53,11 @@ export const editNote = (context) => {
     context
   })
 }
+
+// 登录
+export const sysLogin = (username, password) => {
+  return request._axios.post('/user/login', {
+    name: username,
+    password
+  })
+}

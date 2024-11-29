@@ -17,7 +17,12 @@ export default [
       "no-trailing-spaces": 'error',//一行结束后面不要有空格
       "eqeqeq": "error", // 三等号
       'no-multiple-empty-lines': 'error',
-      'semi': ['error', 'never']
+      'semi': ['error', 'never'],
+      "padding-line-between-statements": [
+        "error",
+        { blankLine: "always", prev: ["const", "let", "var"], next: "*" },
+        { blankLine: "any", prev: ["const", "let", "var"], next: ["const", "let", "var"] }
+      ]
     }
   }
 ]

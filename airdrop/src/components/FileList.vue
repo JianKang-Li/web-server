@@ -44,7 +44,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background layout="prev, pager, next" :total="total" class="w df mt10" @change="pageChange"/>
+    <el-pagination background layout="prev, pager, next" :current-page="currentPage" @update:current-page="pageChange"
+      :total="total" class="w df mt10" />
 
     <el-dialog title="删除确认" v-model="DeleteDialog" width="fit-content" center>
       <span>是否确认删除文件{{ file }}</span>
@@ -91,22 +92,33 @@ export default {
   computed: {
     lastPath() {
       const arr = this.currentPath.split('/')
+
       arr.pop()
       return arr.join('/')
     },
     fileList() {
-      return this.store.menu
+      return this.store.menu[this.currentPage]
     }
   },
   methods: {
-    getMenu() {
+    getMenu(force = false) {
+      if (force) {
+        this.currentPage = 1
+        this.store.update({ key: 'menu', value: {} })
+      }
+      if (this.store.menu[this.currentPage]) {
+        return
+      }
       getInfo(this.currentPath, this.size, this.currentPage).then((res) => {
-        this.store.update({ key: 'menu', value: res })
-        this.total = res[0].total
+        const menu = this.store.menu
+
+        menu[this.currentPage] = res.menu
+        this.store.update({ key: 'menu', value: menu })
+        this.total = res.total
       })
     },
 
-    pageChange (page) {
+    pageChange(page) {
       this.currentPage = page
       this.getMenu()
     },
@@ -114,11 +126,12 @@ export default {
     refresh(path) {
       this.currentPath = path
       this.store.update({ key: 'path', value: this.currentPath })
-      this.getMenu()
+      this.getMenu(true)
     },
 
     go(dir) {
       const path = `${this.currentPath}/${dir}`
+
       this.refresh(path)
     },
 
@@ -170,11 +183,12 @@ export default {
       this.ws = this.store.wsObj.ws
       this.ip = this.store.wsObj.ip
       this.port = this.store.wsObj.port
-      this.getMenu()
+      this.getMenu(true)
       this.ws.onmessage = (data) => {
         const msg = JSON.parse(data.data)
+
         if (msg.status === 'upload' || msg.status === 'delete') {
-          this.getMenu()
+          this.getMenu(true)
         }
       }
     }

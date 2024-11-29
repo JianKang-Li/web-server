@@ -10,7 +10,6 @@
     <el-dialog title="Tips" v-model="centerDialogVisible" width="fit-content" center>
       <p>页面预览文件类型靠自定义和浏览器支持</p>
       <p>移动端浏览器不支持pdf预览</p>
-      <p>后续可能增加登录功能</p>
       <p>此项目仅用于私人使用，请勿用于商业使用</p>
       <template #footer>
         <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>

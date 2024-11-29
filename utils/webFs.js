@@ -29,7 +29,7 @@ class webFs {
     }
   }
 
-  countTotal (path = '') {
+  countTotal(path = '') {
     let idx = 0
     const menu = fs.readdirSync(`${this.basePath}${path}`, { withFileTypes: true })
 
@@ -47,8 +47,14 @@ class webFs {
     const total = this.countTotal(path)
     const menu = fs.readdirSync(`${this.basePath}${path}`, { withFileTypes: true })
 
+    if (!menu.length) {
+      return {
+        total: 0
+      }
+    }
+
     for (let i = 1; i <= size; i++) {
-      const index = (page -1) * size + i
+      const index = (page - 1) * size + i
 
       if (index >= menu.length) {
         break
@@ -61,12 +67,14 @@ class webFs {
           filename: item.name,
           index,
           isDir: item.isDirectory(),
-          total
         }
         menu1.push(obj)
       }
     }
-    return menu1
+    return {
+      total,
+      menu: menu1
+    }
   }
 }
 

@@ -10,6 +10,7 @@ async function initWs() {
     const port = res.port
     const wsPort = res.wsPort
     let ws = new WebSocket(`ws://${ip}:${wsPort}`)
+
     ws.onopen = () => {
       console.log('ws open')
     }
