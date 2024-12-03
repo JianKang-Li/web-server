@@ -1,0 +1,21 @@
+version: '3.5'
+
+networks:
+  my-net:
+    name: website-network
+    driver: bridge
+
+services:
+  node:
+    image: "node:20"
+    container_name: nodejs-test
+    restart: always
+    working_dir: /home/node/app
+    volumes:
+      - ./web-server:/home/node/app
+    ports:
+      - "8888:8888"
+      - "8089:8089"
+    networks:
+      - my-net
+    command: "npm start"
