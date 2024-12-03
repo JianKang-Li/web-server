@@ -8,11 +8,11 @@ networks:
 services:
   node:
     image: "node:20"
-    container_name: nodejs-test
+    container_name: web-server
     restart: always
     working_dir: /home/node/app
     volumes:
-      - ./web-server:/home/node/app
+      - .:/home/node/app
     ports:
       - "8888:8888"
       - "8089:8089"

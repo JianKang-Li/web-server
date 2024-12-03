@@ -17,6 +17,7 @@ fs.access('./cache', fs.constants.F_OK, (err) => {
 const webfs = new webFs()
 let wss = null
 let wsPort = null
+const ip = getIPAddress()
 findPort(8089, (port) => {
   /* 创建webSocket实例 */
   const WebSocket = require('ws')
@@ -31,7 +32,7 @@ findPort(8089, (port) => {
   })
 
   wsPort = port
-  console.log(`ws run at ws://127.0.0.1:${port}`)
+  console.log(`ws run at ws://${ip}:${port}`)
 })
 
 function wsSend(text) {
@@ -39,8 +40,6 @@ function wsSend(text) {
     cl.send(JSON.stringify(text))
   })
 }
-
-var ip = getIPAddress()
 
 router.get('/ip', function (req, res, next) {
   res.send({ ip, wsPort: wsPort, port: 8888 })

@@ -1,4 +1,5 @@
 const os = require("os")
+const Config = require('./config')
 
 const getIPAddress = function () {
   var ipv4 = ""
@@ -32,7 +33,7 @@ const getIPAddress = function () {
     })
   }
   // console.log(ipv4)
-  return ipv4 || "127.0.0.1"
+  return ipv4 || Config.ip || "127.0.0.1"
 }
 
 module.exports = getIPAddress
