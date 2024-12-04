@@ -8,7 +8,7 @@ export default [
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...pluginVue.configs["flat/essential"],
-  { "ignores": ['babel.config.js', 'eslint.config.mjs'] },
+  { "ignores": ['babel.config.js', 'eslint.config.mjs','dist/*'] },
   {
     rules: {
       "vue/multi-word-component-names": 'off',
