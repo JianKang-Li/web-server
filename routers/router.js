@@ -6,6 +6,7 @@ const getIPAddress = require('../ip')
 const findPort = require('../port')
 const webFs = require('../utils/webFs')
 const FileUtil = require('../utils/fileUtil')
+const tokenTool = require('../utils/token')
 
 // 创建缓存文件夹
 fs.access('./cache', fs.constants.F_OK, (err) => {
@@ -52,6 +53,16 @@ router.get("/", function (req, res) {
 })
 
 router.get("/menu", function (req, res, next) {
+  const token = req.query.token
+
+  if (!tokenTool.sureToken(token)) {
+    res.status(200).send({
+      status: 403,
+      msg: 'token 错误'
+    })
+
+    return
+  }
   try {
     const path = req.query.path || ''
     const size = req.query.size || 10
@@ -74,6 +85,16 @@ router.post("/upload", function (req, res, next) {
     const fileName = fields.fileName[0]
     const total = parseInt(fields.total[0])
     const totalSize = parseInt(fields.totalSize[0])
+    const token = fields.token[0]
+
+    if (!tokenTool.sureToken(token)) {
+      res.status(200).send({
+        status: 403,
+        msg: 'token 错误'
+      })
+
+      return
+    }
 
     if (err) {
       next(err)
@@ -103,16 +124,37 @@ router.post("/upload", function (req, res, next) {
 })
 
 router.get('/update', function (req, res, next) {
+  const token = req.query.token
+
+  if (!tokenTool.sureToken(token)) {
+    res.status(200).send({
+      status: 403,
+      msg: 'token 错误'
+    })
+
+    return
+  }
   wsSend({
     status: 'upload',
   })
 })
 
 router.get("/delete", function (req, res, next) {
-  const arr = decodeURI(req.url).split("?")
-  const params = arr[1].split('&')
-  const filename = params[0].split("=")[1]
-  const path = params[1].split('=')[1] || ''
+  const filename = decodeURIComponent(req.query.filename)
+  const path = decodeURIComponent(req.query.path)
+  const token = req.query.token
+
+  console.log(filename)
+
+  if (!tokenTool.sureToken(token)) {
+    res.status(200).send({
+      status: 403,
+      msg: 'token 错误'
+    })
+
+    return
+  }
+
   try {
     const filePath = `./public/files/${path}/${filename}`
     fs.access(filePath, (err) => {
@@ -138,6 +180,18 @@ router.get("/delete", function (req, res, next) {
 
 router.post('/write', function (req, res, next) {
   let text = req.body.text.trim()
+
+  const token = req.body.token
+
+  if (!tokenTool.sureToken(token)) {
+    res.status(200).send({
+      status: 403,
+      msg: 'token 错误'
+    })
+
+    return
+  }
+
   if (text) {
     console.log(text)
     const msg = {
@@ -157,6 +211,17 @@ router.post('/create', function (req, res, next) {
     const type = req.body.type
     const name = req.body.name
     const path = req.body.path
+
+    const token = req.body.token
+
+    if (!tokenTool.sureToken(token)) {
+      res.status(200).send({
+        status: 403,
+        msg: 'token 错误'
+      })
+
+      return
+    }
     const result = webfs.create(type, name, path)
     if (result.status) {
       res.send({
@@ -175,6 +240,16 @@ router.post('/create', function (req, res, next) {
 })
 
 router.get('/clear', function (req, res, next) {
+  const token = req.query.token
+
+  if (!tokenTool.sureToken(token)) {
+    res.status(200).send({
+      status: 403,
+      msg: 'token 错误'
+    })
+
+    return
+  }
   const msg = {
     status: 'clear'
   }
@@ -183,6 +258,16 @@ router.get('/clear', function (req, res, next) {
     status: 200,
     message: "cleaned"
   })
+})
+
+router.get('/token', function (req, res, next) {
+  const token = req.query.token
+
+  if (tokenTool.sureToken(token)) {
+    res.status(200).send({ msg: 'token is ok' })
+  } else {
+    res.status(403).send({ msg: 'token is expire' })
+  }
 })
 
 module.exports = router

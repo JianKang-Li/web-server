@@ -19,13 +19,14 @@ findPort(8888, (port) => {
   app.use(cors())
 
   const noteRouter = require('./routers/note')
-  app.use("/note", noteRouter)
+  app.use("/api/note", noteRouter)
 
   const userRouter = require('./routers/user')
-  app.use('/user', userRouter)
+  app.use('/api/user', userRouter)
 
   const Router = require("./routers/router")
-  app.use("/", Router)
+  app.use("/api", Router)
+  app.use('/', Router)
 
   app.use((err, req, res, next) => {
     if (err) {

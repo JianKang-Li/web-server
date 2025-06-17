@@ -18,6 +18,7 @@ import FileUtil from "@/utils/file"
 import { useDataStore } from "@/store"
 import { ElMessage } from 'element-plus'
 import { ElNotification } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 export default {
   components: {
@@ -30,7 +31,8 @@ export default {
       status: null,
       param: [],
       progressFlag: true,
-      store: useDataStore()
+      store: useDataStore(),
+      router: useRouter()
     }
   },
   methods: {
@@ -47,7 +49,7 @@ export default {
 
     upload(formData) {
       return request
-        ._axios.post(`/upload?path=${this.store.path}`, formData, {
+        ._axios.post(`/api/upload?path=${this.store.path}`, formData, {
           headers: {
             'content-type': 'multipart/form-data'
           }
@@ -55,6 +57,16 @@ export default {
         .then((res) => {
           if (res.status === 200) {
             return true
+          } else if (res.status === 403) {
+            ElNotification({
+              title: '登录过期',
+              message: '请求失败',
+              type: 'error',
+            })
+
+            this.store.update({key: 'user', value: {}})
+            this.router.replace('/login')
+            return 403
           } else {
             ElNotification.error({
               title: '错误',
@@ -91,11 +103,14 @@ export default {
           params.append('total', list[j].total)
           params.append('totalSize', list[j].totalSize)
           params.append('fileName', currentFile.name)
+          params.append('token', this.store.user.token)
 
           flag = await this.upload(params)
 
           if (flag) {
             this.percentage += (list[j].raw.size / total).toFixed(2) * 100
+          } else if (flag === 403) {
+            // ignore
           } else {
             // 重试逻辑
             console.log('retry')
@@ -103,10 +118,10 @@ export default {
         }
       }
 
-      if (flag) {
+      if (flag && flag !== 403) {
         setTimeout(() => {
           this.percentage = 0
-          notifyUpdate()
+          notifyUpdate(this.store.user.token)
         }, 1000)
         ElMessage.success('上传成功')
         this.$refs.upload.clearFiles()

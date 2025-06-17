@@ -11,6 +11,7 @@
 <script>
 import { createDirApi } from '@/apis'
 import { ElMessage } from 'element-plus'
+import {useDataStore} from '@/store'
 
 export default {
   name: 'CreateDir',
@@ -24,6 +25,7 @@ export default {
     return {
       showModal: false,
       dirName: '',
+      store: useDataStore()
     }
   },
   methods: {

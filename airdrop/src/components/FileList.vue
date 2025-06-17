@@ -18,7 +18,7 @@
           <div class="sm">
             <el-link :underline="false" v-if="scope.row.isDir" href="javascript:" type="primary"
               @click="go(scope.row.filename)">{{
-                scope.row.filename
+              scope.row.filename
               }}</el-link>
             <span v-else>{{ scope.row.filename }}</span>
           </div>
@@ -65,7 +65,8 @@ import { DeleteF, getInfo } from "@/apis"
 import createDirModal from "./CreateDir.vue"
 import { useDataStore } from '@/store'
 import Preview from './Preview.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 export default {
   data() {
@@ -80,7 +81,8 @@ export default {
       port: '',
       currentPage: 1,
       total: 0,
-      size: 10
+      size: 10,
+      router: useRouter()
     }
   },
   components: {
@@ -109,7 +111,19 @@ export default {
       if (this.store.menu[this.currentPage]) {
         return
       }
-      getInfo(this.currentPath, this.size, this.currentPage).then((res) => {
+      getInfo(this.currentPath, this.size, this.currentPage, this.store.user.token).then((res) => {
+        if (res.status === 403) {
+          ElNotification({
+            title: '登录过期',
+            message: '请求失败',
+            type: 'error',
+          })
+
+          this.store.update({key: 'user', value: {}})
+          this.router.replace('/login')
+          return
+        }
+
         const menu = this.store.menu
 
         menu[this.currentPage] = res.menu
@@ -148,7 +162,7 @@ export default {
     },
 
     Delete() {
-      DeleteF(this.file, this.currentPath).then(
+      DeleteF(this.file, this.currentPath, this.store.user.token).then(
         (res) => {
           if (res.status === 200) {
             ElMessage({
@@ -156,6 +170,15 @@ export default {
               message: `${res.msg}`,
             })
             this.ws.send('delete')
+          } else if (res.status === 403) {
+            ElNotification({
+              title: '登录过期',
+              message: '请求失败',
+              type: 'error',
+            })
+
+            this.store.update({key: 'user', value: {}})
+            this.router.replace('/login')
           } else {
             ElMessage({
               type: "error",

@@ -14,18 +14,21 @@
 import { postT, cleanT } from '@/apis'
 import { useDataStore } from '@/store'
 import { ElNotification } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 export default {
   data() {
     return {
       text: '',
-      store: useDataStore()
+      store: useDataStore(),
+      router: useRouter()
     }
   },
   methods: {
     postText() {
       let data = {
         text: this.text,
+        token: this.store.user.token
       }
 
       postT(data).then((res) => {
@@ -36,6 +39,15 @@ export default {
             message: '发送成功',
             type: 'success',
           })
+        } else if (res.status === 403) {
+          ElNotification({
+            title: '登录过期',
+            message: '发送失败',
+            type: 'error',
+          })
+
+          this.store.update({key: 'user', value: {}})
+          this.router.replace('/login')
         }
       })
     },
@@ -46,8 +58,7 @@ export default {
       this.text = ''
     },
     clean() {
-      cleanT().then((res) => {
-        // console.log(res);
+      cleanT(this.store.user.token).then((res) => {
         if (res.status === 200) {
           ElNotification({
             title: '成功',
@@ -55,6 +66,15 @@ export default {
             type: 'success',
           })
           this.clear()
+        } else if (res.status === 403) {
+          ElNotification({
+            title: '登录过期',
+            message: '请求失败',
+            type: 'error',
+          })
+
+          this.store.update({key: 'user', value: {}})
+          this.router.replace('/login')
         }
       })
     },

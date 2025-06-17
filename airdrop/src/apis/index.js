@@ -1,62 +1,64 @@
 import request from './request'
 
 // 获取目录
-export const getInfo = (path = '', size = 10, page=1) => {
-  return request._axios.get('/menu', {
+export const getInfo = (path = '', size = 10, page=1, token) => {
+  return request._axios.get('/api/menu', {
     params: {
       path,
       size,
-      page
+      page,
+      token
     },
   })
 }
 
-export const notifyUpdate = () => {
-  return request._axios.get('/update')
+export const notifyUpdate = (token) => {
+  return request._axios.get(`/api/update?token=${token}`)
 }
 
 // 删除文件
-export const DeleteF = (filename, path) => {
-  return request._axios.get(`/delete?file=${filename}&path=${path}`)
+export const DeleteF = (filename, path, token) => {
+  return request._axios.get(`/api/delete?filename=${filename}&path=${path}&token=${token}`)
 }
 // 获取主机IP
 export const getIP = () => {
-  return request._axios.get('/ip')
+  return request._axios.get('/api/ip')
 }
 // 上传文本
 export const postT = (data) => {
-  return request._axios.post('/write', data)
+  return request._axios.post('/api/write', data)
 }
 
 // 清除文本
-export const cleanT = () => {
-  return request._axios.get('/clear')
+export const cleanT = (token) => {
+  return request._axios.get(`/api/clear?token=${token}`)
 }
 
 // 创建文件夹
-export const createDirApi = (dirName, path) => {
-  return request._axios.post('/create', {
+export const createDirApi = (dirName, path, token) => {
+  return request._axios.post('/api/create', {
     type: 'dir',
     name: dirName,
-    path
+    path,
+    token
   })
 }
 
 // 获取记事本内容
-export const getNote = () => {
-  return request._axios.get('/note/read')
+export const getNote = (token) => {
+  return request._axios.get(`/api/note/read?token=${token}`)
 }
 
 // 修改记事本内容
 export const editNote = (context) => {
-  return request._axios.post('/note/edit', {
+  return request._axios.post('/api/note/edit', {
     context
   })
 }
 
 // 登录
 export const sysLogin = (username, password) => {
-  return request._axios.post('/user/login', {
+  return request._axios.post('/api/user/login', {
     name: username,
     password
   })
