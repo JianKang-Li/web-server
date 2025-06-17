@@ -1,5 +1,5 @@
 <template>
-  <div class="upload">
+  <div class="upload" v-if="isAdmin">
     <el-upload ref="upload" class="upload-demo" action="" drag :http-request="httpRequest" :auto-upload="false"
       :multiple="true" :file-list="fileList" :on-remove="handleRemove" :on-change="uploadChange">
       <el-icon class="icon"><upload-filled /></el-icon>
@@ -35,6 +35,11 @@ export default {
       router: useRouter()
     }
   },
+  computed: {
+    isAdmin () {
+      return this.store.user.name === 'admin'
+    }
+  },
   methods: {
     format(percentage) {
       return `${percentage}%`
@@ -52,6 +57,13 @@ export default {
         ._axios.post(`/api/upload?path=${this.store.path}`, formData, {
           headers: {
             'content-type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent)=>{
+            if (progressEvent.lengthComputable) {   //是否存在进度
+                const percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+                // this.progressBar = percentCompleted
+                console.log('进度：',formData.get('fileName'), percentCompleted)
+            }
           }
         })
         .then((res) => {
@@ -119,10 +131,10 @@ export default {
       }
 
       if (flag && flag !== 403) {
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.percentage = 0
           notifyUpdate(this.store.user.token)
-        }, 1000)
+        })
         ElMessage.success('上传成功')
         this.$refs.upload.clearFiles()
       }

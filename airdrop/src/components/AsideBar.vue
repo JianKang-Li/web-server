@@ -2,7 +2,8 @@
   <div class='menu-container'>
     <ul v-show="mode" class="menu">
       <li v-for="(item, index) in menu" :key="index" :index="item.index" class="menu-item">
-        <router-link :to="item.to"><el-button type="primary">{{ item.title }}</el-button></router-link>
+        <router-link :to="item.to" v-if="item.to"><el-button type="primary">{{ item.title }}</el-button></router-link>
+        <el-button type="primary" @click="item.action" v-else>{{ item.title }}</el-button>
       </li>
     </ul>
 
@@ -18,6 +19,16 @@
 <script setup>
 import { ref } from 'vue'
 import { Menu } from "@element-plus/icons-vue"
+import { useDataStore} from '@/store'
+import { useRouter } from 'vue-router'
+
+const store = useDataStore()
+const router = useRouter()
+
+const layout = () => {
+  store.update({key: 'user', value: {}})
+  router.replace('/login')
+}
 
 const mode = ref(false)
 const menu = [
@@ -31,9 +42,16 @@ const menu = [
     title: '文本同传',
     index: '1'
   },
-  {
-    to: '/note',
-    title: '记事本'
+  // note 需要适配用户
+  // {
+  //   to: '/note',
+  //   title: '记事本',
+  //   index: '2'
+  // }
+   {
+    title: '退出',
+    index: '3',
+    action: layout
   }
 ]
 

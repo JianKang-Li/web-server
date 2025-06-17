@@ -5,7 +5,7 @@
           <ELBack></ELBack>
         </el-icon></el-button>
       <el-input :model-value="currentPath" class="path-input"></el-input>
-      <el-button @click="createDir" title="新建文件夹">
+      <el-button v-show="isAdmin" @click="createDir" title="新建文件夹">
         <el-icon>
           <folder-add></folder-add>
         </el-icon>
@@ -16,9 +16,9 @@
       <el-table-column label="文件名" :show-overflow-tooltip="true">
         <template #default="scope">
           <div class="sm">
-            <el-link :underline="false" v-if="scope.row.isDir" href="javascript:" type="primary"
+            <el-link underline="never" v-if="scope.row.isDir" href="javascript:" type="primary"
               @click="go(scope.row.filename)">{{
-              scope.row.filename
+                scope.row.filename
               }}</el-link>
             <span v-else>{{ scope.row.filename }}</span>
           </div>
@@ -37,9 +37,9 @@
             ">预览</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="删除">
+      <el-table-column label="操作">
         <template #default="scope">
-          <el-button v-show="!scope.row.isDir" type="danger" size="small"
+          <el-button v-show="!scope.row.isDir && isAdmin" type="danger" size="small"
             @click="open(scope.row.filename)">删除</el-button>
         </template>
       </el-table-column>
@@ -100,6 +100,9 @@ export default {
     },
     fileList() {
       return this.store.menu[this.currentPage]
+    },
+    isAdmin () {
+      return this.store.user.name === 'admin'
     }
   },
   methods: {
@@ -211,6 +214,7 @@ export default {
         const msg = JSON.parse(data.data)
 
         if (msg.status === 'upload' || msg.status === 'delete') {
+          console.log('update')
           this.getMenu(true)
         }
       }

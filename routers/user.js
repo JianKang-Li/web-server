@@ -7,7 +7,7 @@ const token = require('../utils/token')
 router.post('/login', function (req, res, next) {
   try {
     const name = req.body.name
-    const password = btoa(req.body.password)
+    const password = btoa(req.body.password).replaceAll('+','')
 
     const context = JSON.parse(fs.readFileSync(`./files/user.json`, 'utf-8'))
 

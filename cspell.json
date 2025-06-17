@@ -1,5 +1,5 @@
 {
-  "words":[
+  "words": [
     "pinia",
     "axios",
     "webfs",
@@ -10,5 +10,7 @@
     "apng",
     "unplugin"
   ],
-  "ignorePaths":["package.json"]
+  "ignorePaths": [
+    "package.json"
+  ]
 }

@@ -39,11 +39,17 @@ const login = () => {
     })
     return
   }
-  return sysLogin(form.value.username, atob(form.value.password))
+  let password = form.value.password
+
+  while (password.length % 4 !== 0) {
+    password += '+'
+}
+
+  return sysLogin(form.value.username, atob(password))
     .then(res => {
       if (res.status === 200) {
         store.update({ key: 'user', value: res.user })
-        router.push({ path: '/file' })
+        router.replace({ path: '/file' })
         ElNotification({
           title: '成功',
           message: '登录成功',
