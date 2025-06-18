@@ -112,13 +112,20 @@ router.post("/upload", function (req, res, next) {
         }
       })
 
-      if (total > 1 && parseInt(name.match(/\d+$/g)) === total - 1) {
-        FileUtil.mergeFiles(fileName, total, totalSize)
-      }
       res.status(200).send({
         status: 200,
-        message: "Success"
+        message: "Success",
+        fileName: name
       })
+      if (total > 1 && parseInt(name.match(/\d+$/g)) === total - 1) {
+        FileUtil.mergeFiles(fileName, total, totalSize).then(res => {
+          wsSend({
+            status: 'upload',
+          })
+        }).catch(e => {
+          next(e)
+        })
+      }
     }
   })
 })

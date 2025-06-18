@@ -6,6 +6,7 @@
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
     </el-upload>
     <el-progress id="progress" :percentage="percentage" :format="format" :status="status"></el-progress>
+    <p>{{ finishedFormat }}/ {{ this.total }}</p>
     <el-button type="primary" @click="submitUpload">上传</el-button>
   </div>
 </template>
@@ -13,7 +14,6 @@
 <script>
 import { UploadFilled } from '@element-plus/icons-vue'
 import request from '@/apis/request'
-import { notifyUpdate } from '@/apis'
 import FileUtil from "@/utils/file"
 import { useDataStore } from "@/store"
 import { ElMessage } from 'element-plus'
@@ -32,12 +32,17 @@ export default {
       param: [],
       progressFlag: true,
       store: useDataStore(),
-      router: useRouter()
+      router: useRouter(),
+      total: 0,
+      finished: 0,
     }
   },
   computed: {
     isAdmin () {
       return this.store.user.name === 'admin'
+    },
+    finishedFormat () {
+      return  FileUtil.Byte2MB(this.finished)
     }
   },
   methods: {
@@ -62,6 +67,7 @@ export default {
             if (progressEvent.lengthComputable) {   //是否存在进度
                 const percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
                 // this.progressBar = percentCompleted
+                this.percentage = percentCompleted
                 console.log('进度：',formData.get('fileName'), percentCompleted)
             }
           }
@@ -100,6 +106,7 @@ export default {
         return pre += cur.size
       }, 0)
 
+      this.total = `${FileUtil.Byte2MB(total)} MB`
       this.percentage = 0
 
       let flag = true
@@ -120,9 +127,10 @@ export default {
           flag = await this.upload(params)
 
           if (flag) {
-            this.percentage += (list[j].raw.size / total).toFixed(2) * 100
+            this.finished += list[j].raw.size
           } else if (flag === 403) {
             // ignore
+            flag = false
           } else {
             // 重试逻辑
             console.log('retry')
@@ -133,7 +141,8 @@ export default {
       if (flag && flag !== 403) {
         this.$nextTick(() => {
           this.percentage = 0
-          notifyUpdate(this.store.user.token)
+          this.finished = 0
+          this.total = 0
         })
         ElMessage.success('上传成功')
         this.$refs.upload.clearFiles()

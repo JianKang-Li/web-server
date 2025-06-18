@@ -27,7 +27,7 @@ function fileSplit(file, size = 1024 * 100) {
 }
 
 function Byte2MB(size) {
-  return size / (1024 * 1024)
+  return Math.floor(size / (1024 * 1024))
 }
 
 export default {
